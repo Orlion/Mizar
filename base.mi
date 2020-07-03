@@ -1,0 +1,10 @@
+abc = "abc123奥";
+cba = "奥321cba";
+c = 123;
+if ("" == a) {
+    print(a);
+} elseif ("" == b) {
+    print(b);
+} else {
+    print(c);
+}
