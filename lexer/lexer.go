@@ -35,7 +35,7 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		return lexer.string()
 	} else if r >= '1' && r <= '9' {
 		lexer.input.back(1)
-		return lexer.uint()
+		return lexer.number()
 	} else if "=" == rStr {
 		token = new(Token)
 		token.T = TokenTypeAssign
@@ -67,6 +67,18 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	} else if ";" == rStr {
 		token = new(Token)
 		token.T = TokenTypeSemicolon
+		token.V = rStr
+	} else if "*" == rStr {
+		token = new(Token)
+		token.T = TokenTypeMul
+		token.V = rStr
+	} else if "/" == rStr {
+		token = new(Token)
+		token.T = TokenTypeDiv
+		token.V = rStr
+	} else if "," == rStr {
+		token = new(Token)
+		token.T = TokenTypeComma
 		token.V = rStr
 	} else {
 		// 回退一个字符
@@ -115,7 +127,7 @@ func (lexer *Lexer) string() (token *Token, err error) {
 	return
 }
 
-func (lexer *Lexer) uint() (token *Token, err error) {
+func (lexer *Lexer) number() (token *Token, err error) {
 	var v []rune
 	var r rune
 	for {
@@ -138,7 +150,7 @@ func (lexer *Lexer) uint() (token *Token, err error) {
 	if len(v) >= 1 {
 		token = new(Token)
 		token.V = string(v)
-		token.T = TokenTypeUint
+		token.T = TokenTypeNumber
 	} else {
 		err = errors.New("不识别的字符")
 	}
