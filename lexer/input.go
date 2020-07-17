@@ -1,6 +1,8 @@
 package lexer
 
-import "errors"
+import (
+	"errors"
+)
 
 type Input struct {
 	source []rune

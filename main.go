@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"mizar/lexer"
+	"mizar/parser"
 )
 
-func main() {
+func a() {
 	const source = `
 	abc = "我"
 	def = 2
@@ -21,12 +22,12 @@ func main() {
 	`
 
 	lexer := lexer.NewLexer(source)
-	for {
-		token, err := lexer.NextToken()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println(token.V)
+	parserObj := parser.NewParser(lexer)
+	ast, err := parserObj.Parse()
+	if err != nil {
+		fmt.Println("parse error: %w", err)
+		return
 	}
+
+	fmt.Println(ast)
 }
