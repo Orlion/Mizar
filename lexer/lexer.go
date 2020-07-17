@@ -222,10 +222,14 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 	if len(v) >= 1 {
 		token = new(Token)
 		token.V = string(v)
-		token.T = TokenTypeUint
+		token.T = TokenTypeNumber
 	} else {
 		err = errors.New("不识别的字符")
 	}
 
 	return
+}
+
+func (lexer *Lexer) Push() {
+	// 将token返还
 }
