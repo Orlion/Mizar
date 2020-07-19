@@ -1,21 +1,38 @@
 package lexer
 
 import (
+	"container/list"
 	"errors"
 )
 
 type Lexer struct {
-	input *Input
+	input           *Input
+	openTransaction int // 是否开启事务，事务开启后会收集生成的token，写入到stack中
+	tempQueue       *list.List
 }
 
 var TokenEofErr = errors.New("token eof")
 
 func NewLexer(source string) *Lexer {
 	input := newInput(source)
-	return &Lexer{input}
+	queue := list.New()
+	return &Lexer{input: input, tempQueue: queue}
 }
 
 func (lexer *Lexer) NextToken() (token *Token, err error) {
+	// 如果栈中有则优先从栈中pop出
+	if lexer.tempQueue.Len() > 0 {
+		e := lexer.tempQueue.Front()
+		var b bool
+		token, b = e.Value.(*Token)
+		if b {
+			if lexer.openTransaction > 0 {
+				lexer.tempQueue.MoveToBack(e)
+			}
+			return
+		}
+	}
+
 	r, err := lexer.input.nextRune()
 	if err != nil {
 		if err == inputEofErr {
@@ -32,10 +49,10 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	}
 
 	if `"` == rStr {
-		return lexer.string()
+		token, err = lexer.string()
 	} else if r >= '1' && r <= '9' {
 		lexer.input.back(1)
-		return lexer.number()
+		token, err = lexer.number()
 	} else if "=" == rStr {
 		token = new(Token)
 		token.T = TokenTypeAssign
@@ -92,6 +109,12 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 			}
 		}
 	}
+
+	// 如果开启了事务则将token临时记录下来
+	if err == nil && token != nil && lexer.openTransaction > 0 {
+		lexer.tempQueue.PushBack(token)
+	}
+
 	return
 }
 
@@ -230,6 +253,17 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 	return
 }
 
-func (lexer *Lexer) Push() {
-	// 将token返还
+func (lexer *Lexer) Begin() {
+	lexer.openTransaction++
+}
+
+func (lexer *Lexer) Rollback() {
+	lexer.openTransaction--
+}
+
+func (lexer *Lexer) Commit() {
+	lexer.openTransaction--
+	if lexer.openTransaction <= 0 {
+		lexer.tempQueue.Init()
+	}
 }
