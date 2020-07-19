@@ -15,6 +15,7 @@ func NewParser(lexer *lexer.Lexer) *Parser {
 }
 
 var ExpectError = errors.New("expect error")
+var EofError = errors.New("eof error") // 未parse完成但没有更多输入
 
 // 自底向上分析
 func (parser *Parser) Parse() (*TranslationUnit, error) {
@@ -772,14 +773,22 @@ func (parser *Parser) additiveExpression() (additiveExpression *AdditiveExpressi
 
 	token, err := parser.lexer.NextToken()
 	if err != nil {
-		err = fmt.Errorf("[lexer error] %s", err)
+		if errors.Is(err, lexer.TokenEofErr) {
+			additiveExpression = &AdditiveExpression{
+				T:                        "",
+				MultiplicativeExpression: multiplicativeExpression,
+			}
+			err = nil
+		} else {
+			err = fmt.Errorf("[lexer error] %s", err)
+		}
 		return
 	}
 
 	var t string
 	if token.T != lexer.TokenTypeAdd {
 		if token.T != lexer.TokenTypeSub {
-			err = fmt.Errorf("[%w] expect TokenTypeSub, but %s", ExpectError, token.T)
+			err = fmt.Errorf("[%w] expect TokenTypeAdd or TokenTypeSub, but %s", ExpectError, token.T)
 			return
 		} else {
 			t = "Sub"
@@ -818,14 +827,22 @@ func (parser *Parser) multiplicativeExpression() (multiplicativeExpression *Mult
 
 	token, err := parser.lexer.NextToken()
 	if err != nil {
-		err = fmt.Errorf("[lexer error] %s", err)
+		if errors.Is(err, lexer.TokenEofErr) {
+			multiplicativeExpression = &MultiplicativeExpression{
+				T:                 "",
+				PrimaryExpression: primaryExpression,
+			}
+			err = nil
+		} else {
+			err = fmt.Errorf("[lexer error] %s", err)
+		}
 		return
 	}
 
 	var t string
 	if token.T != lexer.TokenTypeMul {
 		if token.T != lexer.TokenTypeDiv {
-			err = fmt.Errorf("[%w] expect TokenTypeDiv, but %s", ExpectError, token.T)
+			err = fmt.Errorf("[%w] expect TokenTypeMul or TokenTypeDiv, but %s", ExpectError, token.T)
 			return
 		} else {
 			t = "Div"
@@ -882,13 +899,20 @@ func (parser *Parser) primaryExpression() (primaryExpression *PrimaryExpression,
 					var expression *Expression
 					expression, err = parser.expression()
 					if err != nil {
+						if errors.Is(err, lexer.TokenEofErr) {
+							err = fmt.Errorf("[%w] primaryExpression ecpect expression but eof, %s", EofError, err.Error())
+						}
 						return
 					}
 
 					var rpToken *lexer.Token
 					rpToken, err = parser.lexer.NextToken()
 					if err != nil {
-						err = fmt.Errorf("[lexer error] %s", err)
+						if errors.Is(err, lexer.TokenEofErr) {
+							err = fmt.Errorf("[%w] primaryExpression ecpect TokenTypeRp but eof, %s", EofError, err.Error())
+						} else {
+							err = fmt.Errorf("[lexer error] %s", err)
+						}
 						return
 					}
 					if rpToken.T != lexer.TokenTypeRp {
@@ -948,7 +972,11 @@ func (parser *Parser) funcCallExpression() (funcCallExpression *FuncCallExpressi
 
 	lpToken, err := parser.lexer.NextToken()
 	if err != nil {
-		err = fmt.Errorf("[lexer error] %s", err)
+		if err == lexer.TokenEofErr {
+			err = fmt.Errorf("[%w] funcCallExpression ecpect TokenTypeLp but eof, %s", EofError, err.Error())
+		} else {
+			err = fmt.Errorf("[lexer error] %s", err)
+		}
 		return
 	}
 	if lpToken.T != lexer.TokenTypeLp {
@@ -958,19 +986,30 @@ func (parser *Parser) funcCallExpression() (funcCallExpression *FuncCallExpressi
 
 	rpToken, err := parser.lexer.NextToken()
 	if err != nil {
-		err = fmt.Errorf("[lexer error] %s", err)
+		if err == lexer.TokenEofErr {
+			err = fmt.Errorf("[%w] funcCallExpression ecpect TokenTypeRp but eof, %s", EofError, err.Error())
+		} else {
+			err = fmt.Errorf("[lexer error] %s", err)
+		}
 		return
 	}
 	if rpToken.T != lexer.TokenTypeRp {
 		var argumentList *ArgumentList
 		argumentList, err = parser.argumentList()
 		if err != nil {
+			if errors.Is(err, lexer.TokenEofErr) {
+				err = fmt.Errorf("[%w] funcCallExpression ecpect argumentList but eof, %s", EofError, err.Error())
+			}
 			return nil, err
 		}
 
 		rpToken, err = parser.lexer.NextToken()
 		if err != nil {
-			err = fmt.Errorf("[lexer error] %s", err)
+			if err == lexer.TokenEofErr {
+				err = fmt.Errorf("[%w] funcCallExpression ecpect TokenTypeRp but eof, %s", EofError, err.Error())
+			} else {
+				err = fmt.Errorf("[lexer error] %s", err)
+			}
 			return
 		}
 		if rpToken.T != lexer.TokenTypeRp {
