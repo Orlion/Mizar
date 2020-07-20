@@ -26,6 +26,7 @@ type Parameter struct {
 
 type Statement struct {
 	T                 string // Expression,	WhileStatement, IfStatement, BreakStatement, ContinueStatement, ReturnStatement
+	Expression        *Expression
 	WhileStatement    *WhileStatement
 	IfStatement       *IfStatement
 	BreakStatement    *BreakStatement
@@ -49,10 +50,15 @@ type PrimaryExpression struct {
 }
 
 type Expression struct {
-	T                  string // FuncCallExpression, AdditiveExpression, Identifier
+	T                  string // FuncCallExpression, AdditiveExpression, Assignment
 	AdditiveExpression *AdditiveExpression
-	Identifier         string
 	FuncCallExpression *FuncCallExpression
+	Assignment         *Assignment
+	Expression         *Expression
+}
+
+type Assignment struct {
+	Identifier string
 }
 
 type AdditiveExpression struct {

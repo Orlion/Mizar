@@ -3,12 +3,16 @@ package lexer
 import (
 	"container/list"
 	"errors"
+	"mizar/log"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Lexer struct {
 	input           *Input
 	openTransaction int // 是否开启事务，事务开启后会收集生成的token，写入到stack中
 	tempQueue       *list.List
+	queue           *list.List
 }
 
 var TokenEofErr = errors.New("token eof")
@@ -16,20 +20,31 @@ var TokenEofErr = errors.New("token eof")
 func NewLexer(source string) *Lexer {
 	input := newInput(source)
 	queue := list.New()
-	return &Lexer{input: input, tempQueue: queue}
+	tempQueue := list.New()
+	return &Lexer{input: input, tempQueue: tempQueue, queue: queue}
 }
 
 func (lexer *Lexer) NextToken() (token *Token, err error) {
 	// 如果栈中有则优先从栈中pop出
-	if lexer.tempQueue.Len() > 0 {
-		e := lexer.tempQueue.Front()
+	if lexer.queue.Len() > 0 {
+		e := lexer.queue.Front()
+		lexer.queue.Remove(e)
 		var b bool
 		token, b = e.Value.(*Token)
 		if b {
 			if lexer.openTransaction > 0 {
-				lexer.tempQueue.MoveToBack(e)
+				// 如果开启了事务则将token push到临时队列中
+				lexer.tempQueue.PushBack(token)
 			}
+			log.Trace(logrus.Fields{
+				"token": token,
+			}, "lexer.NextToken pop token")
 			return
+		} else {
+			log.Error(logrus.Fields{
+				"e": e,
+			}, "")
+			err = errors.New("lexer queue pop error")
 		}
 	}
 
@@ -43,7 +58,7 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 
 	rStr := string([]rune{r})
 
-	if ` ` == rStr || 9 == r {
+	if ` ` == rStr || 9 == r || "\n" == rStr {
 		// 忽略空格
 		return lexer.NextToken()
 	}
@@ -114,6 +129,10 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	if err == nil && token != nil && lexer.openTransaction > 0 {
 		lexer.tempQueue.PushBack(token)
 	}
+
+	log.Trace(logrus.Fields{
+		"token": token,
+	}, "lexer.NextToken output token")
 
 	return
 }
@@ -245,7 +264,7 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 	if len(v) >= 1 {
 		token = new(Token)
 		token.V = string(v)
-		token.T = TokenTypeNumber
+		token.T = TokenTypeIdentifier
 	} else {
 		err = errors.New("不识别的字符")
 	}
@@ -254,16 +273,29 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 }
 
 func (lexer *Lexer) Begin() {
+	log.Trace(logrus.Fields{
+		"openTransaction": lexer.openTransaction,
+	}, "lexer.Begin")
 	lexer.openTransaction++
 }
 
 func (lexer *Lexer) Rollback() {
+	log.Trace(logrus.Fields{
+		"openTransaction": lexer.openTransaction,
+	}, "lexer.Rollback")
 	lexer.openTransaction--
+	// 将tempQueue中数据写入到queue
+	lexer.queue.PushBackList(lexer.tempQueue)
+	lexer.tempQueue.Init()
 }
 
 func (lexer *Lexer) Commit() {
+	log.Trace(logrus.Fields{
+		"openTransaction": lexer.openTransaction,
+	}, "lexer.Commit")
 	lexer.openTransaction--
+	lexer.tempQueue.Init()
 	if lexer.openTransaction <= 0 {
-		lexer.tempQueue.Init()
+		lexer.queue.Init()
 	}
 }

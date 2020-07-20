@@ -1,24 +1,26 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"mizar/lexer"
+	"mizar/log"
 	"mizar/parser"
+
+	"github.com/sirupsen/logrus"
 )
 
-func a() {
+func init() {
+	var logLevel uint
+	flag.Parse()
+	flag.UintVar(&logLevel, "log-level", uint(logrus.TraceLevel), "default log level")
+	log.Init(logrus.Level(logLevel))
+}
+
+func main() {
 	const source = `
-	abc = "我"
-	def = 2
-	ghi = abc + def
-	if (ghi > 0) {
-		jkl = "jkl"
-	} else if {
-		mn = "mn"
-	} else {
-		op = 123
-	}
-	print(ghi)
+	abc = "我";
 	`
 
 	lexer := lexer.NewLexer(source)
@@ -29,5 +31,7 @@ func a() {
 		return
 	}
 
-	fmt.Println(ast)
+	bytes, err := json.Marshal(ast)
+	fmt.Println(err)
+	fmt.Println(string(bytes))
 }
