@@ -53,6 +53,9 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		if err == inputEofErr {
 			err = TokenEofErr
 		}
+		log.Error(logrus.Fields{
+			"err": err,
+		}, "lexer.NextToken err")
 		return
 	}
 
@@ -185,6 +188,8 @@ func (lexer *Lexer) number() (token *Token, err error) {
 		if r >= '0' && r <= '9' {
 			v = append(v, r)
 		} else {
+			// 还回去
+			lexer.input.back(1)
 			break
 		}
 	}
@@ -298,4 +303,12 @@ func (lexer *Lexer) Commit() {
 	if lexer.openTransaction <= 0 {
 		lexer.queue.Init()
 	}
+}
+
+// 将token还回去
+func (lexer *Lexer) Return(token *Token) {
+	log.Trace(logrus.Fields{
+		"token": token,
+	}, "lexer.Return")
+	lexer.queue.PushBack(token)
 }

@@ -1050,6 +1050,7 @@ func (parser *Parser) additiveExpression() (additiveExpression *AdditiveExpressi
 	var t string
 	if token.T != lexer.TokenTypeAdd {
 		if token.T != lexer.TokenTypeSub {
+			parser.lexer.Return(token)
 			additiveExpression = &AdditiveExpression{
 				T:                        "",
 				MultiplicativeExpression: multiplicativeExpression,
@@ -1111,6 +1112,7 @@ func (parser *Parser) multiplicativeExpression() (multiplicativeExpression *Mult
 	var t string
 	if token.T != lexer.TokenTypeMul {
 		if token.T != lexer.TokenTypeDiv {
+			parser.lexer.Return(token)
 			multiplicativeExpression = &MultiplicativeExpression{
 				T:                 "",
 				PrimaryExpression: primaryExpression,

@@ -20,8 +20,23 @@ func init() {
 
 func main() {
 	const source = `
-	abc = "我";
+	abc = 123;
+	def = "你好啊";
+	if (abc) {
+		print(abc);
+	}
 	`
+
+	//lexer1 := lexer.NewLexer(source)
+	//for {
+	//	t, err := lexer1.NextToken()
+	//	fmt.Println(t)
+	//	if err != nil {
+	//		break
+	//	}
+	//}
+	//
+	//return
 
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
