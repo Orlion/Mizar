@@ -1,51 +1,59 @@
 package lexer
 
 import (
-	"container/list"
 	"errors"
+	"fmt"
 	"mizar/log"
+	"mizar/utils"
 
 	"github.com/sirupsen/logrus"
 )
 
+type transaction struct {
+	id     int
+	queue  *utils.Queue // 该条事务持有的token队列
+	parent *transaction
+}
+
+func newTransaction(id int, parent *transaction) *transaction {
+	return &transaction{id: id, parent: parent, queue: utils.NewQueue()}
+}
+
 type Lexer struct {
-	input           *Input
-	openTransaction int // 是否开启事务，事务开启后会收集生成的token，写入到stack中
-	tempQueue       *list.List
-	queue           *list.List
+	input              *Input
+	currentTransaction *transaction
+	queue              *utils.Queue
 }
 
 var TokenEofErr = errors.New("token eof")
 
 func NewLexer(source string) *Lexer {
 	input := newInput(source)
-	queue := list.New()
-	tempQueue := list.New()
-	return &Lexer{input: input, tempQueue: tempQueue, queue: queue}
+	return &Lexer{input: input, queue: utils.NewQueue()}
 }
 
 func (lexer *Lexer) NextToken() (token *Token, err error) {
 	// 如果栈中有则优先从栈中pop出
 	if lexer.queue.Len() > 0 {
-		e := lexer.queue.Front()
-		lexer.queue.Remove(e)
+		var tokenElement interface{}
+		tokenElement, err = lexer.queue.Pop()
+		if err != nil {
+			err = fmt.Errorf("lexer.currentTransaction.tempQueue.Pop() error: [%w]", err)
+			return
+		}
+
 		var b bool
-		token, b = e.Value.(*Token)
-		if b {
-			if lexer.openTransaction > 0 {
-				// 如果开启了事务则将token push到临时队列中
-				lexer.tempQueue.PushBack(token)
-			}
+		token, b = tokenElement.(*Token)
+		if !b {
+			err = errors.New("lexer.currentTransaction.tempQueue.Pop() error: interface convert to *Token error")
+		} else {
+			lexer.currentTransaction.queue.Push(token)
 			log.Trace(logrus.Fields{
 				"token": token,
 			}, "lexer.NextToken pop token")
-			return
-		} else {
-			log.Error(logrus.Fields{
-				"e": e,
-			}, "")
-			err = errors.New("lexer queue pop error")
 		}
+
+		return
 	}
 
 	r, err := lexer.input.nextRune()
@@ -129,8 +137,8 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	}
 
 	// 如果开启了事务则将token临时记录下来
-	if err == nil && token != nil && lexer.openTransaction > 0 {
-		lexer.tempQueue.PushBack(token)
+	if err == nil && token != nil && lexer.currentTransaction != nil {
+		lexer.currentTransaction.queue.Push(token)
 	}
 
 	log.Trace(logrus.Fields{
@@ -209,7 +217,8 @@ func (lexer *Lexer) keyword() (token *Token, err error) {
 	var runes []rune
 	for _, keyword := range Keywords {
 		keywordRunes := []rune(keyword)
-		runes, err = lexer.input.lookahead(len(keywordRunes))
+		keywordRunesLen := len(keywordRunes)
+		runes, err = lexer.input.lookahead(keywordRunesLen)
 		if err != nil {
 			if err == inputEofErr {
 				continue
@@ -217,6 +226,7 @@ func (lexer *Lexer) keyword() (token *Token, err error) {
 			return
 		}
 		if string(keyword) == string(runes) {
+			lexer.input.advance(keywordRunesLen)
 			token = new(Token)
 			token.V = string(keyword)
 			token.T = keyword
@@ -262,6 +272,7 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 		if r == '_' || (r <= 'Z' && r >= 'A') || (r <= 'z' && r >= 'a') || (r >= '0' && r <= '9') {
 			v = append(v, r)
 		} else {
+			lexer.input.back(1)
 			break
 		}
 	}
@@ -278,37 +289,45 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 }
 
 func (lexer *Lexer) Begin() {
+	if nil == lexer.currentTransaction {
+		lexer.currentTransaction = newTransaction(0, nil)
+	} else {
+		lexer.currentTransaction = newTransaction(lexer.currentTransaction.id+1, lexer.currentTransaction)
+	}
 	log.Trace(logrus.Fields{
-		"openTransaction": lexer.openTransaction,
+		"transaction": lexer.currentTransaction,
 	}, "lexer.Begin")
-	lexer.openTransaction++
 }
 
 func (lexer *Lexer) Rollback() {
 	log.Trace(logrus.Fields{
-		"openTransaction": lexer.openTransaction,
+		"transaction": lexer.currentTransaction,
 	}, "lexer.Rollback")
-	lexer.openTransaction--
-	// 将tempQueue中数据写入到queue
-	lexer.queue.PushBackList(lexer.tempQueue)
-	lexer.tempQueue.Init()
+
+	if lexer.currentTransaction.parent != nil {
+		lexer.currentTransaction.parent.queue.PushQueue(lexer.currentTransaction.queue)
+		lexer.queue.PushQueue(lexer.currentTransaction.queue)
+	}
+
+	lexer.currentTransaction = lexer.currentTransaction.parent
 }
 
 func (lexer *Lexer) Commit() {
 	log.Trace(logrus.Fields{
-		"openTransaction": lexer.openTransaction,
+		"transaction": lexer.currentTransaction,
 	}, "lexer.Commit")
-	lexer.openTransaction--
-	lexer.tempQueue.Init()
-	if lexer.openTransaction <= 0 {
-		lexer.queue.Init()
+	if lexer.currentTransaction.parent != nil {
+		lexer.currentTransaction.parent.queue.PushQueue(lexer.currentTransaction.queue)
 	}
+	lexer.currentTransaction = lexer.currentTransaction.parent
 }
 
 // 将token还回去
 func (lexer *Lexer) Return(token *Token) {
 	log.Trace(logrus.Fields{
-		"token": token,
+		"transaction": lexer.currentTransaction,
+		"token":       token,
 	}, "lexer.Return")
-	lexer.queue.PushBack(token)
+	lexer.queue.Push(token)
+	lexer.currentTransaction.queue.Pop()
 }

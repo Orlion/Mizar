@@ -27,16 +27,16 @@ func main() {
 	}
 	`
 
-	//lexer1 := lexer.NewLexer(source)
-	//for {
-	//	t, err := lexer1.NextToken()
-	//	fmt.Println(t)
-	//	if err != nil {
-	//		break
-	//	}
-	//}
-	//
-	//return
+	// lexer1 := lexer.NewLexer(source)
+	// for {
+	// 	t, err := lexer1.NextToken()
+	// 	fmt.Println(t)
+	// 	if err != nil {
+	// 		break
+	// 	}
+	// }
+
+	// return
 
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)

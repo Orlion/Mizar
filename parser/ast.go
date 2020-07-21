@@ -50,9 +50,8 @@ type PrimaryExpression struct {
 }
 
 type Expression struct {
-	T                  string // FuncCallExpression, AdditiveExpression, Assignment
+	T                  string // AdditiveExpression, Assignment
 	AdditiveExpression *AdditiveExpression
-	FuncCallExpression *FuncCallExpression
 	Assignment         *Assignment
 	Expression         *Expression
 }

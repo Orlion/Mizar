@@ -339,6 +339,7 @@ func (parser *Parser) block() (block *Block, err error) {
 		return
 	}
 	if token.T != lexer.TokenTypeRc {
+		parser.lexer.Return(token)
 		statementList, err = parser.statementList()
 		if err != nil {
 			if errors.Is(err, lexer.TokenEofErr) {
@@ -417,64 +418,73 @@ func (parser *Parser) statement() (statement *Statement, err error) {
 			"err": err,
 		}, "statement() end")
 	}()
-	whileStatement, err := parser.whileStatement()
+	ifStatement, err := parser.ifStatement()
 	if err != nil {
-		var breakStatement *BreakStatement
-		breakStatement, err = parser.breakStatement()
+		var whileStatement *WhileStatement
+		whileStatement, err = parser.whileStatement()
 		if err != nil {
-			var continueStatement *ContinueStatement
-			continueStatement, err = parser.continueStatement()
+			var breakStatement *BreakStatement
+			breakStatement, err = parser.breakStatement()
 			if err != nil {
-				var returnStatement *ReturnStatement
-				returnStatement, err = parser.returnStatement()
+				var continueStatement *ContinueStatement
+				continueStatement, err = parser.continueStatement()
 				if err != nil {
-					var expression *Expression
-					expression, err = parser.expression()
+					var returnStatement *ReturnStatement
+					returnStatement, err = parser.returnStatement()
 					if err != nil {
-						return
-					}
-
-					var token *lexer.Token
-					token, err = parser.lexer.NextToken()
-					if err != nil {
-						if errors.Is(err, lexer.TokenEofErr) {
-							err = fmt.Errorf("[%w] statement ecpect TokenTypeSemicolon but eof, %s", EofError, err.Error())
-						} else {
-							err = fmt.Errorf("[lexer error] %w", err)
+						var expression *Expression
+						expression, err = parser.expression()
+						if err != nil {
+							return
 						}
-						return
-					}
-					if token.T != lexer.TokenTypeSemicolon {
-						err = fmt.Errorf("[%w] statement expect TokenTypeSemicolon, but %s", ExpectError, token.T)
-						return
-					}
 
-					statement = &Statement{
-						T:          "Expression",
-						Expression: expression,
+						var token *lexer.Token
+						token, err = parser.lexer.NextToken()
+						if err != nil {
+							if errors.Is(err, lexer.TokenEofErr) {
+								err = fmt.Errorf("[%w] statement ecpect TokenTypeSemicolon but eof, %s", EofError, err.Error())
+							} else {
+								err = fmt.Errorf("[lexer error] %w", err)
+							}
+							return
+						}
+						if token.T != lexer.TokenTypeSemicolon {
+							err = fmt.Errorf("[%w] statement expect TokenTypeSemicolon, but %s", ExpectError, token.T)
+							return
+						}
+
+						statement = &Statement{
+							T:          "Expression",
+							Expression: expression,
+						}
+					} else {
+						statement = &Statement{
+							T:               "ReturnStatement",
+							ReturnStatement: returnStatement,
+						}
 					}
 				} else {
 					statement = &Statement{
-						T:               "ReturnStatement",
-						ReturnStatement: returnStatement,
+						T:                 "ContinueStatement",
+						ContinueStatement: continueStatement,
 					}
 				}
 			} else {
 				statement = &Statement{
-					T:                 "ContinueStatement",
-					ContinueStatement: continueStatement,
+					T:              "BreakStatement",
+					BreakStatement: breakStatement,
 				}
 			}
 		} else {
 			statement = &Statement{
-				T:              "BreakStatement",
-				BreakStatement: breakStatement,
+				T:              "WhileStatement",
+				WhileStatement: whileStatement,
 			}
 		}
 	} else {
 		statement = &Statement{
-			T:              "WhileStatement",
-			WhileStatement: whileStatement,
+			T:           "IfStatement",
+			IfStatement: ifStatement,
 		}
 	}
 
@@ -935,21 +945,12 @@ func (parser *Parser) expression() (expression *Expression, err error) {
 
 	assignment, err := parser.assignment()
 	if err != nil {
-		var funcCallExpression *FuncCallExpression
-		funcCallExpression, err = parser.funcCallExpression()
-		if err != nil {
-			var additiveExpression *AdditiveExpression
-			additiveExpression, err = parser.additiveExpression()
-			if err == nil {
-				expression = &Expression{
-					T:                  "AdditiveExpression",
-					AdditiveExpression: additiveExpression,
-				}
-			}
-		} else {
+		var additiveExpression *AdditiveExpression
+		additiveExpression, err = parser.additiveExpression()
+		if err == nil {
 			expression = &Expression{
-				T:                  "FuncCallExpression",
-				FuncCallExpression: funcCallExpression,
+				T:                  "AdditiveExpression",
+				AdditiveExpression: additiveExpression,
 			}
 		}
 	} else {
@@ -1152,25 +1153,21 @@ func (parser *Parser) primaryExpression() (primaryExpression *PrimaryExpression,
 			"err": err,
 		}, "primaryExpression() end")
 	}()
-	token, err := parser.lexer.NextToken()
+
+	var funcCallExpression *FuncCallExpression
+	funcCallExpression, err = parser.funcCallExpression()
 	if err != nil {
-		err = fmt.Errorf("[lexer error] %w", err)
-		return
-	}
-	if token.T != lexer.TokenTypeString {
-		if token.T != lexer.TokenTypeNumber {
-			if token.T != lexer.TokenTypeIdentifier {
-				var funcCallExpression *FuncCallExpression
-				funcCallExpression, err = parser.funcCallExpression()
-				if err != nil {
-					var lpToken *lexer.Token
-					lpToken, err = parser.lexer.NextToken()
-					if err != nil {
-						err = fmt.Errorf("[lexer error] %w", err)
-						return
-					}
-					if lpToken.T != lexer.TokenTypeLp {
-						err = fmt.Errorf("[%w] primaryExpression expect TokenTypeRp, but %s", ExpectError, lpToken.T)
+		var token *lexer.Token
+		token, err = parser.lexer.NextToken()
+		if err != nil {
+			err = fmt.Errorf("[lexer error] %w", err)
+			return
+		}
+		if token.T != lexer.TokenTypeString {
+			if token.T != lexer.TokenTypeNumber {
+				if token.T != lexer.TokenTypeIdentifier {
+					if token.T != lexer.TokenTypeLp {
+						err = fmt.Errorf("[%w] primaryExpression expect TokenTypeLp, but %s", ExpectError, token.T)
 						return
 					}
 
@@ -1204,26 +1201,26 @@ func (parser *Parser) primaryExpression() (primaryExpression *PrimaryExpression,
 					}
 				} else {
 					primaryExpression = &PrimaryExpression{
-						T:                  "FuncCallExpression",
-						FuncCallExpression: funcCallExpression,
+						T:          "Identifier",
+						Identifier: token.V,
 					}
 				}
 			} else {
 				primaryExpression = &PrimaryExpression{
-					T:          "Identifier",
-					Identifier: token.V,
+					T:      "Number",
+					Number: token.V,
 				}
 			}
 		} else {
 			primaryExpression = &PrimaryExpression{
-				T:      "Number",
-				Number: token.V,
+				T:      "String",
+				String: token.V,
 			}
 		}
 	} else {
 		primaryExpression = &PrimaryExpression{
-			T:      "String",
-			String: token.V,
+			T:                  "FuncCallExpression",
+			FuncCallExpression: funcCallExpression,
 		}
 	}
 	return

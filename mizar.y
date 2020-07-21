@@ -35,7 +35,6 @@ elseif_list ->  elseif
 elseif  ->      ELSEIF LR expression RP block
 
 expression ->   additive_expression
-            |   func_call_expression
             |   assignment expression
 
 assignment -> IDENTIFIER ASSIGN

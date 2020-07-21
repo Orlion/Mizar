@@ -59,7 +59,7 @@ func (input *Input) lookahead(num int) (runes []rune, err error) {
 	}
 
 	for i := 0; i < num; i++ {
-		runes = append(runes, input.source[input.pos+i])
+		runes = append(runes, input.source[input.pos+1+i])
 	}
 
 	return
