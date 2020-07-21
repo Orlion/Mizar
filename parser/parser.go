@@ -229,7 +229,7 @@ func (parser *Parser) parameterList() (parameterList *ParameterList, err error) 
 			break
 		}
 		if token.T != lexer.TokenTypeComma {
-			err = fmt.Errorf("[%w] parameterList expect TokenTypeComma, but %s", ExpectError, token.T)
+			parser.lexer.Return(token)
 			break
 		}
 
@@ -286,7 +286,7 @@ func (parser *Parser) argumentList() (argumentList *ArgumentList, err error) {
 			break
 		}
 		if token.T != lexer.TokenTypeComma {
-			err = fmt.Errorf("[%w] argumentList expect TokenTypeComma, but %s", ExpectError, token.T)
+			parser.lexer.Return(token)
 			break
 		}
 
@@ -393,9 +393,7 @@ func (parser *Parser) statementList() (statementList *StatementList, err error) 
 	for {
 		staement, err = parser.statement()
 		if err != nil {
-			if errors.Is(err, lexer.TokenEofErr) {
-				err = nil
-			}
+			err = nil
 			break
 		}
 
@@ -768,13 +766,11 @@ func (parser *Parser) ifStatement() (ifStatement *IfStatement, err error) {
 
 	elseIfList, err := parser.elseIfList()
 	if err != nil {
-		if errors.Is(err, lexer.TokenEofErr) {
-			ifStatement = &IfStatement{
-				Expression: expression,
-				Block:      block,
-			}
-			err = nil
+		ifStatement = &IfStatement{
+			Expression: expression,
+			Block:      block,
 		}
+		err = nil
 		return
 	}
 
@@ -795,6 +791,7 @@ func (parser *Parser) ifStatement() (ifStatement *IfStatement, err error) {
 		ifStatement = &IfStatement{
 			Expression: expression,
 			Block:      block,
+			ElseIfList: elseIfList,
 		}
 		err = nil
 		return
@@ -1273,6 +1270,7 @@ func (parser *Parser) funcCallExpression() (funcCallExpression *FuncCallExpressi
 		return
 	}
 	if rpToken.T != lexer.TokenTypeRp {
+		parser.lexer.Return(rpToken)
 		var argumentList *ArgumentList
 		argumentList, err = parser.argumentList()
 		if err != nil {
@@ -1307,4 +1305,28 @@ func (parser *Parser) funcCallExpression() (funcCallExpression *FuncCallExpressi
 	}
 
 	return
+}
+
+func (parser *Parser) TprimaryExpression() (*PrimaryExpression, error) {
+	return parser.primaryExpression()
+}
+
+func (parser *Parser) TfunccallExpression() (funcCallExpression *FuncCallExpression, err error) {
+	return parser.funcCallExpression()
+}
+
+func (parser *Parser) Tblock() (block *Block, err error) {
+	return parser.block()
+}
+
+func (parser *Parser) TifStatement() (ifStatement *IfStatement, err error) {
+	return parser.ifStatement()
+}
+
+func (parser *Parser) Tstatement() (statement *Statement, err error){
+	return parser.statement()
+}
+
+func (parser *Parser) TstatementList() (statementList *StatementList, err error){
+	return parser.statementList()
 }
