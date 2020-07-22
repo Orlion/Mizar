@@ -22,131 +22,51 @@ func main() {
 	const source = `
 	abc = 123;
 	def = "你好啊";
+	
 	if (abc) {
 		print(abc);
+	} elseif (def) {
+		print(def);
+	} elseif (123) {
+		abc = 123;
+		def = "你好啊";
+		abc = def;
+	} else {
+		print("else", "def", "abc");
+	}
+
+	i = 0;
+	while(1) {
+		i = i + 1;
+		if (i) {
+			break;
+		} else {
+			continue;
+		}
+	}
+
+	func print(foo, foo1, foo2) {
+		abc = 123;
+		def = "你好啊";
+		if (abc) {
+			print(abc);
+		} elseif (def) {
+			print(def);
+		} elseif (123) {
+			abc = 123;
+			def = "你好啊";
+			abc = def;
+		} else {
+			print("else");
+		}
+		abc = "abc";
+		return abc;
 	}
 	`
-
-	// lexer1 := lexer.NewLexer(source)
-	// for {
-	// 	t, err := lexer1.NextToken()
-	// 	fmt.Println(t)
-	// 	if err != nil {
-	// 		break
-	// 	}
-	// }
-
-	// return
 
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testPrimaryExpression() {
-	const source = `
-	print(abc)
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.TprimaryExpression()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testFunccallExpression() {
-	const source = `
-	print(abc)
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.TfunccallExpression()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testStatement() {
-	const source = `
-	print(abc);
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.Tstatement()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testStatementList() {
-	const source = `
-	print(abc);
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.TstatementList()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testBlock() {
-	const source = `
-	{
-		print(abc);
-	}
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.Tblock()
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	bytes, err := json.Marshal(ast)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-}
-
-func testIfStatement() {
-	const source = `
-	if (abc) {
-		print(abc);
-	}
-	`
-	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.TifStatement()
 	if err != nil {
 		fmt.Println("parse error: %w", err)
 		return

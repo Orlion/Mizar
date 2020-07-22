@@ -304,10 +304,7 @@ func (lexer *Lexer) Rollback() {
 		"transaction": lexer.currentTransaction,
 	}, "lexer.Rollback")
 
-	if lexer.currentTransaction.parent != nil {
-		lexer.currentTransaction.parent.queue.PushQueue(lexer.currentTransaction.queue)
-		lexer.queue.PushQueue(lexer.currentTransaction.queue)
-	}
+	lexer.queue.PushQueue(lexer.currentTransaction.queue)
 
 	lexer.currentTransaction = lexer.currentTransaction.parent
 }
