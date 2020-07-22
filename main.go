@@ -14,7 +14,7 @@ import (
 func init() {
 	var logLevel uint
 	flag.Parse()
-	flag.UintVar(&logLevel, "log-level", uint(logrus.TraceLevel), "default log level")
+	flag.UintVar(&logLevel, "log-level", uint(logrus.ErrorLevel), "default log level")
 	log.Init(logrus.Level(logLevel))
 }
 
