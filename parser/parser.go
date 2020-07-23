@@ -73,7 +73,7 @@ func (parser *Parser) definitionOrStatement() (definitionOrStatement *Definition
 	if err == nil {
 		definitionOrStatement = &DefinitionOrStatement{
 			FunctionDefinition: functionDefinition,
-			T:                  "FunctionDefinition",
+			T:                  DefinitionOrStatementTypeFunctionDefinition,
 		}
 	} else {
 		var statement *Statement
@@ -81,7 +81,7 @@ func (parser *Parser) definitionOrStatement() (definitionOrStatement *Definition
 		if err == nil {
 			definitionOrStatement = &DefinitionOrStatement{
 				Statement: statement,
-				T:         "Statement",
+				T:         DefinitionOrStatementTypeStatement,
 			}
 		}
 	}
@@ -454,36 +454,36 @@ func (parser *Parser) statement() (statement *Statement, err error) {
 						}
 
 						statement = &Statement{
-							T:          "Expression",
+							T:          StatementTypeExpression,
 							Expression: expression,
 						}
 					} else {
 						statement = &Statement{
-							T:               "ReturnStatement",
+							T:               StatementTypeReturnStatement,
 							ReturnStatement: returnStatement,
 						}
 					}
 				} else {
 					statement = &Statement{
-						T:                 "ContinueStatement",
+						T:                 StatementTypeContinueStatement,
 						ContinueStatement: continueStatement,
 					}
 				}
 			} else {
 				statement = &Statement{
-					T:              "BreakStatement",
+					T:              StatementTypeBreakStatement,
 					BreakStatement: breakStatement,
 				}
 			}
 		} else {
 			statement = &Statement{
-				T:              "WhileStatement",
+				T:              StatementTypeWhileStatement,
 				WhileStatement: whileStatement,
 			}
 		}
 	} else {
 		statement = &Statement{
-			T:           "IfStatement",
+			T:           StatementTypeIfStatement,
 			IfStatement: ifStatement,
 		}
 	}
@@ -942,7 +942,7 @@ func (parser *Parser) expression() (expression *Expression, err error) {
 		additiveExpression, err = parser.additiveExpression()
 		if err == nil {
 			expression = &Expression{
-				T:                  "AdditiveExpression",
+				T:                  ExpressionTypeAdditiveExpression,
 				AdditiveExpression: additiveExpression,
 			}
 		}
@@ -954,7 +954,7 @@ func (parser *Parser) expression() (expression *Expression, err error) {
 			}
 		} else {
 			expression = &Expression{
-				T:          "Assignment",
+				T:          ExpressionTypeAssignment,
 				Assignment: assignment,
 				Expression: expressionChild,
 			}
@@ -1031,7 +1031,7 @@ func (parser *Parser) additiveExpression() (additiveExpression *AdditiveExpressi
 	if err != nil {
 		if errors.Is(err, lexer.TokenEofErr) {
 			additiveExpression = &AdditiveExpression{
-				T:                        "",
+				T:                        AdditiveExpressionTypeNull,
 				MultiplicativeExpression: multiplicativeExpression,
 			}
 			err = nil
@@ -1041,20 +1041,20 @@ func (parser *Parser) additiveExpression() (additiveExpression *AdditiveExpressi
 		return
 	}
 
-	var t string
+	var t AdditiveExpressionType
 	if token.T != lexer.TokenTypeAdd {
 		if token.T != lexer.TokenTypeSub {
 			parser.lexer.Return(token)
 			additiveExpression = &AdditiveExpression{
-				T:                        "",
+				T:                        AdditiveExpressionTypeNull,
 				MultiplicativeExpression: multiplicativeExpression,
 			}
 			return
 		} else {
-			t = "Sub"
+			t = AdditiveExpressionTypeSub
 		}
 	} else {
-		t = "Add"
+		t = AdditiveExpressionTypeAdd
 	}
 
 	additiveExpressionChild, err := parser.additiveExpression()
@@ -1093,7 +1093,7 @@ func (parser *Parser) multiplicativeExpression() (multiplicativeExpression *Mult
 	if err != nil {
 		if errors.Is(err, lexer.TokenEofErr) {
 			multiplicativeExpression = &MultiplicativeExpression{
-				T:                 "",
+				T:                 MultiplicativeExpressionTypeNull,
 				PrimaryExpression: primaryExpression,
 			}
 			err = nil
@@ -1103,20 +1103,20 @@ func (parser *Parser) multiplicativeExpression() (multiplicativeExpression *Mult
 		return
 	}
 
-	var t string
+	var t MultiplicativeExpressionType
 	if token.T != lexer.TokenTypeMul {
 		if token.T != lexer.TokenTypeDiv {
 			parser.lexer.Return(token)
 			multiplicativeExpression = &MultiplicativeExpression{
-				T:                 "",
+				T:                 MultiplicativeExpressionTypeNull,
 				PrimaryExpression: primaryExpression,
 			}
 			return
 		} else {
-			t = "Div"
+			t = MultiplicativeExpressionTypeDiv
 		}
 	} else {
-		t = "Mul"
+		t = MultiplicativeExpressionTypeMul
 	}
 
 	multiplicativeExpressionChild, err := parser.multiplicativeExpression()
@@ -1189,30 +1189,30 @@ func (parser *Parser) primaryExpression() (primaryExpression *PrimaryExpression,
 					}
 
 					primaryExpression = &PrimaryExpression{
-						T:          "Expression",
+						T:          PrimaryExpressionTypeExpression,
 						Expression: expression,
 					}
 				} else {
 					primaryExpression = &PrimaryExpression{
-						T:          "Identifier",
+						T:          PrimaryExpressionTypeIdentifier,
 						Identifier: token.V,
 					}
 				}
 			} else {
 				primaryExpression = &PrimaryExpression{
-					T:      "Number",
+					T:      PrimaryExpressionTypeNumber,
 					Number: token.V,
 				}
 			}
 		} else {
 			primaryExpression = &PrimaryExpression{
-				T:      "String",
+				T:      PrimaryExpressionTypeString,
 				String: token.V,
 			}
 		}
 	} else {
 		primaryExpression = &PrimaryExpression{
-			T:                  "FuncCallExpression",
+			T:                  PrimaryExpressionTypeFuncCallExpression,
 			FuncCallExpression: funcCallExpression,
 		}
 	}

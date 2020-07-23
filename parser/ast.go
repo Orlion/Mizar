@@ -4,8 +4,15 @@ type TranslationUnit struct {
 	DefinitionOrStatementList []*DefinitionOrStatement
 }
 
+type DefinitionOrStatementType string
+
+const (
+	DefinitionOrStatementTypeFunctionDefinition DefinitionOrStatementType = "FunctionDefinition"
+	DefinitionOrStatementTypeStatement          DefinitionOrStatementType = "Statement"
+)
+
 type DefinitionOrStatement struct {
-	T                  string // FunctionDefinition, Statement
+	T                  DefinitionOrStatementType // FunctionDefinition, Statement
 	FunctionDefinition *FunctionDefinition
 	Statement          *Statement
 }
@@ -24,8 +31,19 @@ type Parameter struct {
 	Name string
 }
 
+type StatementType string
+
+const (
+	StatementTypeExpression        StatementType = "Expression"
+	StatementTypeWhileStatement    StatementType = "WhileStatement"
+	StatementTypeIfStatement       StatementType = "IfStatement"
+	StatementTypeBreakStatement    StatementType = "BreakStatement"
+	StatementTypeContinueStatement StatementType = "ContinueStatement"
+	StatementTypeReturnStatement   StatementType = "ReturnStatement"
+)
+
 type Statement struct {
-	T                 string // Expression,	WhileStatement, IfStatement, BreakStatement, ContinueStatement, ReturnStatement
+	T                 StatementType // Expression,	WhileStatement, IfStatement, BreakStatement, ContinueStatement, ReturnStatement
 	Expression        *Expression
 	WhileStatement    *WhileStatement
 	IfStatement       *IfStatement
@@ -34,14 +52,32 @@ type Statement struct {
 	ReturnStatement   *ReturnStatement
 }
 
+type MultiplicativeExpressionType string
+
+const (
+	MultiplicativeExpressionTypeNull MultiplicativeExpressionType = ""
+	MultiplicativeExpressionTypeMul  MultiplicativeExpressionType = "Mul"
+	MultiplicativeExpressionTypeDiv  MultiplicativeExpressionType = "Div"
+)
+
 type MultiplicativeExpression struct {
-	T                        string // "", "Mul", "Div"
+	T                        MultiplicativeExpressionType // "", "Mul", "Div"
 	PrimaryExpression        *PrimaryExpression
 	MultiplicativeExpression *MultiplicativeExpression
 }
 
+type PrimaryExpressionType string
+
+const (
+	PrimaryExpressionTypeString             PrimaryExpressionType = "String"
+	PrimaryExpressionTypeNumber             PrimaryExpressionType = "Number"
+	PrimaryExpressionTypeIdentifier         PrimaryExpressionType = "Identifier"
+	PrimaryExpressionTypeExpression         PrimaryExpressionType = "Expression"
+	PrimaryExpressionTypeFuncCallExpression PrimaryExpressionType = "FuncCallExpression"
+)
+
 type PrimaryExpression struct {
-	T                  string // String, Number, Identifier, Expression FuncCallExpression
+	T                  PrimaryExpressionType // String, Number, Identifier, Expression FuncCallExpression
 	String             string
 	Number             string
 	Identifier         string
@@ -49,8 +85,15 @@ type PrimaryExpression struct {
 	FuncCallExpression *FuncCallExpression
 }
 
+type ExpressionType string
+
+const (
+	ExpressionTypeAdditiveExpression ExpressionType = "AdditiveExpression"
+	ExpressionTypeAssignment         ExpressionType = "Assignment"
+)
+
 type Expression struct {
-	T                  string // AdditiveExpression, Assignment
+	T                  ExpressionType // AdditiveExpression, Assignment
 	AdditiveExpression *AdditiveExpression
 	Assignment         *Assignment
 	Expression         *Expression
@@ -60,8 +103,16 @@ type Assignment struct {
 	Identifier string
 }
 
+type AdditiveExpressionType string
+
+const (
+	AdditiveExpressionTypeNull AdditiveExpressionType = ""
+	AdditiveExpressionTypeAdd  AdditiveExpressionType = "Add"
+	AdditiveExpressionTypeSub  AdditiveExpressionType = "Sub"
+)
+
 type AdditiveExpression struct {
-	T                        string // "" "Add", "Sub"
+	T                        AdditiveExpressionType // "" "Add", "Sub"
 	MultiplicativeExpression *MultiplicativeExpression
 	AdditiveExpression       *AdditiveExpression
 }
