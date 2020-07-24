@@ -1,10 +1,11 @@
+
 abc = "abc123奥";
 cba = "奥321cba";
-c = 123;
-if ("" == a) {
-    print(a);
-} elseif ("" == b) {
-    print(b);
+print(abc);
+if (abc) {
+    print(abc);
+} elseif (cba) {
+    print(cba);
 } else {
     print(c);
 }
@@ -13,5 +14,7 @@ func foo(arg1, arg2) {
     arg3 = arg1 + arg2;
     return arg3;
 }
+
 d = 456;
 f = foo(c, d);
+print(d);

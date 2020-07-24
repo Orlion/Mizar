@@ -79,7 +79,7 @@ const (
 type PrimaryExpression struct {
 	T                  PrimaryExpressionType // String, Number, Identifier, Expression FuncCallExpression
 	String             string
-	Number             string
+	Number             int
 	Identifier         string
 	Expression         *Expression
 	FuncCallExpression *FuncCallExpression

@@ -14,7 +14,7 @@ var inputEofErr = errors.New("文件结束")
 
 func newInput(source string) *Input {
 	sourceRunes := []rune(source)
-	return &Input{sourceRunes, len(sourceRunes), 0}
+	return &Input{sourceRunes, len(sourceRunes), -1}
 }
 
 func (input *Input) nextRune() (r rune, err error) {
@@ -41,7 +41,7 @@ func (input *Input) advance(num int) (err error) {
 
 // 回退
 func (input *Input) back(num int) (err error) {
-	if input.pos-num < 0 {
+	if input.pos-num < -1 {
 		err = inputEofErr
 		return
 	}

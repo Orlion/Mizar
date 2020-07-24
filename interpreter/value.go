@@ -14,5 +14,21 @@ type mizarValue struct {
 
 type value struct {
 	str    string
-	number int64
+	number int
 }
+
+type StatementResultType string
+
+const (
+	StatementResultTypeNormal   StatementResultType = "normal"
+	StatementResultTypeReturn   StatementResultType = "return"
+	StatementResultTypeBreak    StatementResultType = "break"
+	StatementResultTypeContinue StatementResultType = "continue"
+)
+
+type StatementResult struct {
+	T           StatementResultType
+	ReturnValue *mizarValue
+}
+
+type NativeFunc func(args []*mizarValue) (mval *mizarValue, err error)

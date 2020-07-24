@@ -61,9 +61,6 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		if err == inputEofErr {
 			err = TokenEofErr
 		}
-		log.Error(logrus.Fields{
-			"err": err,
-		}, "lexer.NextToken err")
 		return
 	}
 
@@ -79,6 +76,10 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	} else if r >= '1' && r <= '9' {
 		lexer.input.back(1)
 		token, err = lexer.number()
+	} else if "0" == rStr {
+		token = new(Token)
+		token.V = "0"
+		token.T = TokenTypeNumber
 	} else if "=" == rStr {
 		token = new(Token)
 		token.T = TokenTypeAssign

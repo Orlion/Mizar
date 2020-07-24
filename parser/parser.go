@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mizar/lexer"
 	"mizar/log"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 )
@@ -1199,9 +1200,14 @@ func (parser *Parser) primaryExpression() (primaryExpression *PrimaryExpression,
 					}
 				}
 			} else {
+				number, convErr := strconv.Atoi(token.V)
+				if convErr != nil {
+					err = fmt.Errorf("[%w] primaryExpression number convert to int err: %s", ExpectError, convErr.Error())
+					return
+				}
 				primaryExpression = &PrimaryExpression{
 					T:      PrimaryExpressionTypeNumber,
-					Number: token.V,
+					Number: number,
 				}
 			}
 		} else {

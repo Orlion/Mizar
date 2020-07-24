@@ -1,5 +1,5 @@
 translation_unit    ->  definition_or_statement
-                    |   translation_unit definition_or_statement
+                    |   definition_or_statement translation_unit
 
 definition_or_statement ->  function_definition
                         |   statement
@@ -7,10 +7,10 @@ definition_or_statement ->  function_definition
 function_definition ->  FUNC IDENTIFIER LP parameter_list RP block
 
 parameter_list  ->  IDENTIFIER
-                |   parameter_list COMMA IDENTIFIER
+                |   IDENTIFIER COMMA parameter_list
 
 statement_list  ->  statement
-                |   staement_list statement
+                |   statement staement_list
 
 statement -> expression SEMICOLON
         |   while_statement
@@ -30,7 +30,7 @@ continue_statement -> CONTINUE SEMICOLON
 return_statement -> RETURN expression SEMICOLON
 
 elseif_list ->  elseif
-            ->  elseif_list elseif
+            ->  elseif elseif_list
 
 elseif  ->      ELSEIF LR expression RP block
 
@@ -55,9 +55,8 @@ func_call_expression ->   IDENTIFIER Lp RP
                         | IDENTIFIER Lp argument_list RP
 
 argument_list   ->  expression
-                |   argument_list COMMA expression
+                |   expression COMMA argument_list
 
 block   ->  LC  statement_list RC
         |   LC RC
-
 
