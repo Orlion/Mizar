@@ -1,7 +1,21 @@
-abc = 123;
-def = "你好啊";
+int abc = 123;
+string def = "你好啊";
+int[] ghi = [];
+bool jkl = true;
+double mno = 100.0000001;
+char pqr = 'a';
 
-if (abc) {
+public class StringPrint {
+    public void print(String str) {
+        Print.printString(str);
+    }
+}
+
+public interface MyPrint {
+    public void print();
+}
+
+if (abc > 3) {
     print(abc);
 } elseif (def) {
     print(def);

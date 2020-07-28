@@ -45,8 +45,12 @@ additive_expression ->  multiplicative_expression
 multiplicative_expression ->    primary_expression
                             |   primary_expression MUL multiplicative_expression
                             |   primary_expression DIV multiplicative_expression
-primary_expression ->   STRING
-                    |   NUMBER
+primary_expression ->   STRING_LITERAL
+                    |   INT_LITERAL
+                    |   DOUBLE_LITERAL
+                    |   NULL
+                    |   TRUE
+                    |   FALSE
                     |   IDENTIFIER
                     |   LP expression RP
                     |   func_call_expression

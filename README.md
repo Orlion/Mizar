@@ -14,3 +14,11 @@ go build -o mizar
 4. 语义分析
 5. 中间代码生成（如果jvm容易学习则生成jvm字节码）
 6. 实现虚拟机
+
+# 类型
+* Bool
+* Int
+* Double
+* List
+* String
+* Char

@@ -5,16 +5,19 @@ import (
 )
 
 type Input struct {
-	source []rune
-	lens   int
-	pos    int
+	source            []rune
+	lens              int
+	pos               int
+	lastLineColumnNum int // 上一行的列数
+	LineNum           int // 当前所在行数
+	ColumnNum         int // 当前所在列数
 }
 
 var inputEofErr = errors.New("文件结束")
 
 func newInput(source string) *Input {
 	sourceRunes := []rune(source)
-	return &Input{sourceRunes, len(sourceRunes), -1}
+	return &Input{sourceRunes, len(sourceRunes), -1, 1, 1, 1}
 }
 
 func (input *Input) nextRune() (r rune, err error) {
@@ -34,6 +37,17 @@ func (input *Input) advance(num int) (err error) {
 		return
 	}
 
+	// 检测步进过程中是否遇到了换行符，如果遇到换行符则将当前行数+1, 并修改当前列数
+	for i := 1; i <= num; i++ {
+		if input.source[input.pos+i] == 10 {
+			input.LineNum++
+			input.lastLineColumnNum = input.ColumnNum
+			input.ColumnNum = 1
+		} else {
+			input.ColumnNum++
+		}
+	}
+
 	input.pos = input.pos + num
 
 	return
@@ -44,6 +58,16 @@ func (input *Input) back(num int) (err error) {
 	if input.pos-num < -1 {
 		err = inputEofErr
 		return
+	}
+
+	// 检测步进过程中是否遇到了换行符，如果遇到换行符则将当前行数+1, 并修改当前列数
+	for i := 1; i < num; i++ {
+		if input.pos-i != -1 && input.source[input.pos-i] == 10 {
+			input.LineNum--
+			input.ColumnNum = input.lastLineColumnNum
+		} else {
+			input.ColumnNum--
+		}
 	}
 
 	input.pos = input.pos - num
