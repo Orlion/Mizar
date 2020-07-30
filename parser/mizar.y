@@ -4,63 +4,102 @@ translation_unit    ->  definition_or_statement
 definition_or_statement ->  function_definition
                         |   statement
 
-function_definition ->  FUNC IDENTIFIER LP parameter_list RP block
+method_definition ->  (ABSTRACT) (PUBLIC|PRIVATE|PROTECTED) IDENTIFIER IDENTIFIER LP parameter_list RP block
 
-parameter_list  ->  IDENTIFIER
-                |   IDENTIFIER COMMA parameter_list
+parameter_list  ->  IDENTIFIER IDENTIFIER
+                |   IDENTIFIER IDENTIFIER COMMA parameter_list
+
+// 接口声明
+interface_declaration ->  INTERFACE IDENTIFIER LC RC
+                        | INTERFACE IDENTIFIER LC interface_function_declaration_statement_list RC
+
+// 接口内部方法声明
+interface_function_declaration_statement_list ->  interface_function_declaration_statement
+                                                | interface_function_declaration_statement_list interface_function_declaration_statement
+
+interface_function_declaration_statement -> IDENTIFIER IDENTIFIER LR RP SEMICOLON
+                                | void IDENTIFIER LR RP SEMICOLON
+                                | IDENTIFIER IDENTIFIER LR parameter_list RP SEMICOLON
+                                | void IDENTIFIER LR parameter_list RP SEMICOLON
+
+// extends声明
+extends_declaration -> EXTENDS IDENTIFIER
+                        | extends_declaration IDENTIFIER
+
+implements_declaration -> IMPLEMENTS IDENTIFIER
+                        | implements_declaration IDENTIFIER
+
+// 类声明
+class_declaration -> ABSTRACT CLASS IDENTIFIER LC  RC
+                |    ABSTRACT CLASS IDENTIFIER LC class_statement_list RC
+                | CLASS IDENTIFIER LC  RC
+                | CLASS IDENTIFIER LC class_statement_list RC
+
+class_statement_list -> class_statement
+                        | class_statement_list class_statement
+
+class_statement ->    method_definition
+                | PUBLIC var_declaration SEMICOLON
+                | PRIVATE var_declaration SEMICOLON
+                | PROTECTED var_declaration SEMICOLON
+                | CONST var_declaration SEMICOLON
+
+// 变量声明
+var_declaration ->      IDENTIFIER IDENTIFIER
 
 statement_list  ->  statement
                 |   statement staement_list
 
 statement -> expression SEMICOLON
+        |   IDENTIFIER ASSIGN expression SEMICOLON
+        |   IDENTIFIER DOT IDENTIFIER ASSIGN expression SEMICOLON
+        |   var_declaration ASSIGN expression SEMICOLON // 声明并赋值
         |   while_statement
         |   if_statement
+        |   for_statement
         |   break_statement
         |   continue_statement
         |   return_statement
+        |   var_declaration_statement
+
+var_declaration_statement -> var_declaration SEMICOLON
+
 while_statement ->  WHILE LP expression RP block
 if_statement -> IF LP expression RP block
             |   IF LP expression RP block ELSE block
-            |   IF LP expression RP block elseif_list ELSE block
 
-break_statement -> BREAK SEMICOLON
+for_statement -> FOR LR expression_opt SEMICOLON expression_opt SEMICOLON expression_opt block
 
-continue_statement -> CONTINUE SEMICOLON
+break_statement -> BREAK expression_opt SEMICOLON
 
-return_statement -> RETURN expression SEMICOLON
+continue_statement -> CONTINUE expression_opt SEMICOLON
 
-elseif_list ->  elseif
-            ->  elseif elseif_list
+return_statement -> RETURN expression_opt SEMICOLON
+                        
+expression_opt -> // NULL
+                | expression
 
-elseif  ->      ELSEIF LR expression RP block
+func_call_expression ->   primary_expression DOT IDENTIFIER Lp RP
+                        | primary_expression DOT IDENTIFIER LP argument_list RP
+                        | IDENTIFIER DOUBLE_COLON IDENTIFIER Lp RP
+                        | IDENTIFIER DOUBLE_COLON IDENTIFIER Lp argument_list RP
 
-expression ->   additive_expression
-            |   assignment expression
+argument_list   ->  primary_expression
+                |   primary_expression COMMA argument_list
 
-assignment -> IDENTIFIER ASSIGN
+block   ->  LC  statement_list RC
+        |   LC RC
 
-additive_expression ->  multiplicative_expression
-                    |   multiplicative_expression ADD additive_expression
-                    |   multiplicative_expression SUB additive_expression
-multiplicative_expression ->    primary_expression
-                            |   primary_expression MUL multiplicative_expression
-                            |   primary_expression DIV multiplicative_expression
-primary_expression ->   STRING_LITERAL
+
+expression ->           STRING_LITERAL
                     |   INT_LITERAL
                     |   DOUBLE_LITERAL
                     |   NULL
                     |   TRUE
                     |   FALSE
                     |   IDENTIFIER
-                    |   LP expression RP
                     |   func_call_expression
-
-func_call_expression ->   IDENTIFIER Lp RP
-                        | IDENTIFIER Lp argument_list RP
-
-argument_list   ->  expression
-                |   expression COMMA argument_list
-
-block   ->  LC  statement_list RC
-        |   LC RC
-
+                    |   NEW IDENTIFIER LP argument_list RP  // new Class(argument_list)
+                    |   NEW IDENTIFIER LP RP  // new Class()
+                    |   IDENTIFIER DOT IDENTIFIER // a.b访问对象属性
+                    |   IDENTIFIER DOUBLE_COLON IDENTIFIER // a::b 访问类常量
