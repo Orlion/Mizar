@@ -21,15 +21,16 @@ var EofError = errors.New("eof error") // 未parse完成但没有更多输入
 // 自底向上分析
 func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 	var (
-		token  *lexer.Token
-		eInter interface{}
-		action *Action
+		token      *lexer.Token
+		stateInter interface{}
+		state      int
+		action     *Action
 	)
 
 	actionTable := new(ActionTable)
 
 	// 将状态0压入堆栈
-	parser.stack.Push(0)
+	parser.stateStack.Push(0)
 
 	for {
 		token, err = parser.lexer.NextToken()
@@ -37,18 +38,18 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 			return
 		}
 
-		eInter = parser.stack.Top()
-		e = eInter.(*Element)
+		stateInter = parser.stateStack.Top()
+		state = stateInter.(int)
 
 		// 根据state和token从Action表中获取下一步要进行的操作
-		action = actionTable.getAction(e, token)
+		action = actionTable.getAction(state, token)
 		// 如果没有对应操作则识别失败
 		if action == nil {
 			err = nil
 			break
 		}
 
-		if action.T == "stateX" {
+		if action.T == "shift" {
 			parser.stack.Push(&Element{
 				State: X,
 			})
