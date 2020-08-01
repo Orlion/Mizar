@@ -2,6 +2,49 @@ package parser
 
 import "fmt"
 
+type Symbol string
+
+const (
+	SymbolStringLiteral = "STRING_LITERAL"
+	SymbolIntLiteral = "INT_LITERAL"
+	SymbolDoubleLiteral = "DOUBLE_LITERAL"
+	SymbolNullL = "NULL"
+	SymbolTrue = "TRUE"
+	SymbolFalse = "FALSE"
+	SymbolIdentifier = "IDENTIFIER"
+	SymbolNew = "New"
+	SymbolLp = "LP"
+	SymbolRp = "RP"
+	SymbolDot = "DOT"
+	SymbolDoubleColon = "DOUBLE_COLON"
+	SymbolLc = "LC"
+	SymbolRc = "RC"
+	SymbolComma = "COMMA"
+	SymbolReturn = "RETURN"
+	SymbolContinue = "CONTINUE"
+	SymbolBreak = "BREAK"
+	SymbolSemicolon = "SEMICOLON"
+	SymbolFor = "FOR"
+	SymbolIf = "IF"
+	SymbolElse = "ELSE"
+	SymbolWhile = "WHILE"
+	SymbolAssign = "ASSIGN"
+	SymbolClass = "CLASS"
+	SymbolInterface = "INTERFACE"
+	SymbolAbstract = "ASBTRACT"
+	SymbolImplements = "IMPLEMENTS"
+	SymbolExtends = "EXTENDS"
+	SymbolVoid = "VOID"
+	SymbolPublic = "PUBLIC"
+	SymbolPrivate = "PRIVATE"
+	SymbolProtected = "PROTECTED"
+	SymbolConst = "CONST"
+	SymbolExpression = "expression"
+	SymbolBlock = "block"
+	SymbolArgumentList = "argument_list"
+	SymbolMethodCallExpression = "method_call_expression"
+)
+
 type Production struct {
 	left   string   // 左侧非终结符
 	right  []string // 右侧符号列表

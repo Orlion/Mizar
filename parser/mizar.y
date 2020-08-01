@@ -79,7 +79,7 @@ return_statement -> RETURN expression_opt SEMICOLON
 expression_opt -> // NULL
                 | expression
 
-func_call_expression ->   primary_expression DOT IDENTIFIER Lp RP
+method_call_expression ->   primary_expression DOT IDENTIFIER Lp RP
                         | primary_expression DOT IDENTIFIER LP argument_list RP
                         | IDENTIFIER DOUBLE_COLON IDENTIFIER Lp RP
                         | IDENTIFIER DOUBLE_COLON IDENTIFIER Lp argument_list RP
@@ -98,7 +98,7 @@ expression ->           STRING_LITERAL
                     |   TRUE
                     |   FALSE
                     |   IDENTIFIER
-                    |   func_call_expression
+                    |   method_call_expression
                     |   NEW IDENTIFIER LP argument_list RP  // new Class(argument_list)
                     |   NEW IDENTIFIER LP RP  // new Class()
                     |   IDENTIFIER DOT IDENTIFIER // a.b访问对象属性
