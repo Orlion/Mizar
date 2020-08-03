@@ -43,19 +43,38 @@ const (
 	SymbolBlock = "block"
 	SymbolArgumentList = "argument_list"
 	SymbolMethodCallExpression = "method_call_expression"
+	SymbolExpressionOpt = "expression_opt"
+	SymbolReturnStatement = "return_statement"
+	SymbolContinueStatement = "continue_statement"
+	SymbolBreakStatement = "break_statement"
+	SymbolForStatement = "for_statement"
+	SymbolIfStatement = "if_statement"
+	SymbolWhileStatement = "while_statement"
+	SymbolValueDeclarationStatement = "value_declaration_statement"
+	SymbolStatement = "statement"
+	SymbolStatementList = "statement_list"
+	SymbolValueDeclaration = "value_declaration"
+	SymbolClassStatement = "class_statement"
+	SymbolClassStatementList = "class_statement_list"
+	SymbolClassDeclaration = "class_declaration"
+	SymbolImplementsDeclaration = "implements_declaration"
+	SymbolExtendsDelcaration = "extends_declaration"
+	SymbolInterfaceMethonDeclarationStatement = "interface_method_declaration_statement"
+	SymbolInterfaceMethodDeclarationStatementList = "interface_method_declaration_statement_list"
+	SymbolInterfaceDeclaration = "interface_declaration"
+	SymbolParameterList = "parameter_list"
+	SymbolMethodDeclaration = "method_declaration"
+	SymbolClassDeclarationList = "class_declaration_list"
+	SymbolTranslationUnit = "translation_unit"
 )
 
 type Production struct {
-	left   string   // 左侧非终结符
-	right  []string // 右侧符号列表
+	left   Symbol   // 左侧非终结符
+	right  []Symbol // 右侧符号列表
 	dotPos int      // .的位置
 }
 
-type ProductionManager struct {
-	productionMap map[int][]*Production
-}
-
-func newProduction(left string, right []string, dotPos int) *Production {
+func newProduction(left Symbol, right []Symbol, dotPos int) *Production {
 	return &Production{
 		left:   left,
 		right:  right,
@@ -68,7 +87,7 @@ func (p *Production) dotForward() *Production {
 	return newProduction(p.left, p.right, p.dotPos+1)
 }
 
-func (p *Production) getDotSymbol() string {
+func (p *Production) getDotSymbol() Symbol {
 	return p.right[p.dotPos]
 }
 
@@ -83,10 +102,16 @@ func (p *Production) print() {
 	fmt.Println()
 }
 
-func newProductionManager() *ProductionManager {
-	pm := new(ProductionManager)
+type ProductionManager struct {
+	productionMap map[int][]*Production
+}
 
-	pm.productionMap[1] = newProduction(1, nil, 0)
+func newProductionManager() (pm *ProductionManager) {
+	pm = new(ProductionManager)
+	return
+}
 
-	return pm
+// 获取以左侧为left的生成式列表
+func (pm *ProductionManager) getProductions(left Symbol) (productions []*Production) {
+	return
 }

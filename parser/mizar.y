@@ -1,8 +1,7 @@
-translation_unit    ->  definition_or_statement
-                    |   definition_or_statement translation_unit
+translation_unit -> class_declaration_list
 
-definition_or_statement ->  function_definition
-                        |   statement
+class_declaration_list ->  class_declaration
+                  |  class_declaration_list class_declaration
 
 method_definition ->  (ABSTRACT) (PUBLIC|PRIVATE|PROTECTED) IDENTIFIER IDENTIFIER LP parameter_list RP block
 
@@ -14,10 +13,10 @@ interface_declaration ->  INTERFACE IDENTIFIER LC RC
                         | INTERFACE IDENTIFIER LC interface_function_declaration_statement_list RC
 
 // 接口内部方法声明
-interface_function_declaration_statement_list ->  interface_function_declaration_statement
+interface_method_declaration_statement_list ->  interface_function_declaration_statement
                                                 | interface_function_declaration_statement_list interface_function_declaration_statement
 
-interface_function_declaration_statement -> IDENTIFIER IDENTIFIER LR RP SEMICOLON
+interface_method_declaration_statement -> IDENTIFIER IDENTIFIER LR RP SEMICOLON
                                 | void IDENTIFIER LR RP SEMICOLON
                                 | IDENTIFIER IDENTIFIER LR parameter_list RP SEMICOLON
                                 | void IDENTIFIER LR parameter_list RP SEMICOLON
@@ -45,7 +44,7 @@ class_statement ->    method_definition
                 | CONST var_declaration SEMICOLON
 
 // 变量声明
-var_declaration ->      IDENTIFIER IDENTIFIER
+value_declaration ->      IDENTIFIER IDENTIFIER
 
 statement_list  ->  statement
                 |   statement staement_list
@@ -62,7 +61,7 @@ statement -> expression SEMICOLON
         |   return_statement
         |   var_declaration_statement
 
-var_declaration_statement -> var_declaration SEMICOLON
+value_declaration_statement -> value_declaration SEMICOLON
 
 while_statement ->  WHILE LP expression RP block
 if_statement -> IF LP expression RP block
