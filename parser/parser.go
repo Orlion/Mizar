@@ -27,6 +27,10 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 		action     *Action
 	)
 
+	pm := newProductionManager()
+	gsm := newGrammarStateManager(pm)
+	gs := gsm.build()
+
 	actionTable := new(ActionTable)
 
 	// 将状态0压入堆栈

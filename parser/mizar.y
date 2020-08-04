@@ -90,6 +90,9 @@ block   ->  LC  statement_list RC
         |   LC RC
 
 
+new_obj_expression -> NEW IDENTIFIER LP argument_list RP  // new Class(argument_list)
+                    |   NEW IDENTIFIER LP RP  // new Class()
+
 expression ->           STRING_LITERAL
                     |   INT_LITERAL
                     |   DOUBLE_LITERAL
@@ -97,8 +100,8 @@ expression ->           STRING_LITERAL
                     |   TRUE
                     |   FALSE
                     |   IDENTIFIER
-                    |   method_call_expression
-                    |   NEW IDENTIFIER LP argument_list RP  // new Class(argument_list)
-                    |   NEW IDENTIFIER LP RP  // new Class()
                     |   IDENTIFIER DOT IDENTIFIER // a.b访问对象属性
                     |   IDENTIFIER DOUBLE_COLON IDENTIFIER // a::b 访问类常量
+                    |   new_obj_expression
+                    |   method_call_expression
+                    
