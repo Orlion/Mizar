@@ -47,7 +47,6 @@ const (
 	TokenComma     = ","
 	// TokenExclamation   = "!"
 	TokenDot           = "."
-	TokenDoubleColon   = "::"
 	TokenContinue      = "continue"
 	TokenReturn        = "return"
 	TokenWhile         = "while"
@@ -67,9 +66,7 @@ const (
 	TokenTrue          = "true"
 	TokenFalse         = "false"
 	TokenNull          = "null"
-	TokenConst         = "const"
 	TokenThis          = "this"
-	TokenSelf          = "self"
 	TokenIdentifier    = "identifier"
 	TokenStringLiteral = "stringLiteral"
 	TokenDoubleLiteral = "doubleLiteral"
@@ -77,9 +74,9 @@ const (
 )
 
 var reservedWords = []string{
-	"=", "{", "}", "(", ")", "[", "]", ";", ",", ".", "::",
+	"=", "{", "}", "(", ")", "[", "]", ";", ",", ".",
 	"continue", "return", "while", "break", "else", "void", "if", "for", "class", "interface", "abstract", "public",
-	"private", "protected", "implements", "extends", "true", "false", "null", "const", "this", "self",
+	"private", "protected", "implements", "extends", "true", "false", "null", "this",
 }
 
 var reservedWords2TokenTypeMap = map[string]TokenType{
@@ -133,10 +130,7 @@ var reservedWords2TokenTypeMap = map[string]TokenType{
 	"true":       TokenTrue,
 	"false":      TokenFalse,
 	"null":       TokenNull,
-	"const":      TokenConst,
-	"::":         TokenDoubleColon,
 	"this":       TokenThis,
-	"self":       TokenSelf,
 }
 
 func init() {

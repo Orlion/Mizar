@@ -151,11 +151,11 @@ State:
 	switch state {
 	case 1:
 		token = new(Token)
-		token.T = TokenInt
+		token.T = TokenIntLiteral
 		token.V = string(v)
 	case 2:
 		token = new(Token)
-		token.T = TokenDouble
+		token.T = TokenDoubleLiteral
 		token.V = string(v)
 	default:
 		err = TokenUnknownErr
