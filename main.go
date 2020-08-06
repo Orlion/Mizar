@@ -9,21 +9,20 @@ import (
 	"mizar/lexer"
 	"mizar/log"
 	"mizar/parser"
-	"os"
 
 	"github.com/sirupsen/logrus"
 )
 
-func a() {
+func main() {
 	var (
 		logLevel uint
 		dumpAst  bool
 	)
 
-	if len(os.Args) < 2 {
-		fmt.Println("请输入文件名")
-		return
-	}
+	// if len(os.Args) < 2 {
+	// 	fmt.Println("请输入文件名")
+	// 	return
+	// }
 
 	flag.UintVar(&logLevel, "log-level", uint(logrus.ErrorLevel), "日志级别")
 	flag.BoolVar(&dumpAst, "dumpast", false, "是否打印抽象语法树")
@@ -31,7 +30,8 @@ func a() {
 
 	log.Init(logrus.Level(logLevel))
 
-	b, err := ioutil.ReadFile(os.Args[1])
+	// b, err := ioutil.ReadFile(os.Args[1])
+	b, err := ioutil.ReadFile("demo/base.mi")
 	if err != nil {
 		fmt.Println(err)
 		return

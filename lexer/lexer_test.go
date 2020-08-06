@@ -13,7 +13,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenInt {
+		if token.T != TokenIntLiteral {
 			t.Error(token)
 		}
 	}
@@ -22,7 +22,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenDouble {
+		if token.T != TokenDoubleLiteral {
 			t.Error(token)
 		}
 	}
@@ -31,7 +31,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenDouble {
+		if token.T != TokenDoubleLiteral {
 			t.Error(token)
 		}
 	}
@@ -40,7 +40,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenInt {
+		if token.T != TokenIntLiteral {
 			t.Error(token)
 		}
 	}
@@ -49,7 +49,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenDouble {
+		if token.T != TokenDoubleLiteral {
 			t.Error(token)
 		}
 	}
@@ -58,7 +58,7 @@ func TestNumber(t *testing.T) {
 	if token, err := lexer.number(); err != nil {
 		t.Error(err)
 	} else {
-		if token.T != TokenDouble {
+		if token.T != TokenDoubleLiteral {
 			t.Error(token)
 		}
 	}
@@ -71,12 +71,12 @@ func TestNumber(t *testing.T) {
 
 func TestNextToken(t *testing.T) {
 	log.Init(logrus.TraceLevel)
-	lexer := NewLexer("123=123.123+=abc+function00.0100-001")
+	lexer := NewLexer("123=123.12(00.0100-001")
 	if token, err := lexer.NextToken(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenInt {
+		if token.T != TokenIntLiteral {
 			t.Error(token)
 			t.FailNow()
 		}
@@ -96,7 +96,7 @@ func TestNextToken(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenDouble {
+		if token.T != TokenDoubleLiteral {
 			t.Error(token)
 			t.FailNow()
 		}
@@ -106,67 +106,7 @@ func TestNextToken(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenAddAssign {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenIdentifier {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenAdd {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenFunction {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenDouble {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenSub {
-			t.Error(token)
-			t.FailNow()
-		}
-	}
-
-	if token, err := lexer.NextToken(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	} else {
-		if token.T != TokenInt {
+		if token.T != TokenLp {
 			t.Error(token)
 			t.FailNow()
 		}

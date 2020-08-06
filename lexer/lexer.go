@@ -95,7 +95,7 @@ func (lexer *Lexer) string() (token *Token, err error) {
 	if len(v) >= 1 {
 		token = new(Token)
 		token.V = string(v)
-		token.T = TokenString
+		token.T = TokenStringLiteral
 	} else {
 		err = TokenUnknownErr
 	}

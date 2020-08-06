@@ -1,5 +1,10 @@
 package parser
 
+import (
+	"fmt"
+	"strconv"
+)
+
 type GrammarState struct {
 	gsm           *GrammarStateManager
 	stateNum      int
@@ -16,6 +21,13 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 	gs.stateNum = stateNum
 	gs.productions = productions
 
+	fmt.Println("newGrammarState: " + strconv.Itoa(stateNum))
+	for _, p := range productions {
+		p.print()
+	}
+	fmt.Println()
+	fmt.Println()
+
 	return
 }
 
@@ -25,7 +37,13 @@ func (gs *GrammarState) closure() {
 		ps         []*Production
 	)
 
-	gs.closureSet = gs.productions
+	gs.closureKeySet = make(map[string]struct{})
+	for _, p := range gs.productions {
+		if _, exists := gs.closureKeySet[p.str]; !exists {
+			gs.closureSet = append(gs.closureSet, p)
+			gs.closureKeySet[p.str] = struct{}{}
+		}
+	}
 
 	// 如果.右侧是非终结符则将其生成式递归加入进来
 	i := 0
@@ -56,6 +74,9 @@ func (gs *GrammarState) makePartition() {
 // .右移一位生成下一节点
 func (gs *GrammarState) makeTransition() {
 	var newGs *GrammarState
+
+	gs.transition = make(map[Symbol]*GrammarState)
+
 	for symbol, ps := range gs.partition {
 		newGs = gs.gsm.getGrammarState(ps)
 		gs.transition[symbol] = newGs
@@ -96,7 +117,7 @@ func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarSt
 
 func (gsm *GrammarStateManager) build() *GrammarState {
 	gsm.stateNumCount++
-	gs := newGrammarState(gsm, gsm.stateNumCount, gsm.pm.getProductions(SymbolClassDeclarationList))
+	gs := newGrammarState(gsm, gsm.stateNumCount, gsm.pm.getProductions(SymbolTranslationUnit))
 	gs.createTransition()
 
 	return gs

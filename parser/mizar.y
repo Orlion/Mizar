@@ -6,24 +6,40 @@ class_interface_declaration_list ->     class_interface_declaration
 class_interface_declaration ->       class_declaration
                         |       interface_declaration
 // 接口声明
-interface_declaration ->  INTERFACE IDENTIFIER LC interface_function_declaration_statement_list RC
+interface_declaration ->        INTERFACE IDENTIFIER LC RC
+                        |       INTERFACE IDENTIFIER LC interface_function_declaration_statement_list RC
 
 // 接口内部方法声明
 interface_method_declaration_statement_list ->  interface_function_declaration_statement
                                                 | interface_function_declaration_statement_list interface_function_declaration_statement
 
-interface_method_declaration_statement -> return_val_type IDENTIFIER LR parameter_list RP SEMICOLON
-
-// extends声明
-extends_declaration -> EXTENDS IDENTIFIER
-                        | extends_declaration IDENTIFIER
-
-implements_declaration -> IMPLEMENTS IDENTIFIER
-                        | implements_declaration IDENTIFIER
+interface_method_declaration_statement ->       return_val_type IDENTIFIER LP RP SEMICOLON
+                                        |       return_val_type IDENTIFIER LR parameter_list RP SEMICOLON
 
 // 类声明
 class_declaration ->    CLASS IDENTIFIER LC RC
-                        ABSTRACT CLASS IDENTIFIER LC class_statement_list RC
+                |       ABSTRACT CLASS IDENTIFIER LC RC
+                |       CLASS IDENTIFIER LC class_statement_list RC
+                |       ABSTRACT CLASS IDENTIFIER LC class_statement_list RC
+                |       CLASS IDENTIFIER extends_declaration LC RC
+                |       ABSTRACT CLASS IDENTIFIER extends_declaration LC RC
+                |       CLASS IDENTIFIER LC class_statement_list extends_declaration RC
+                |       ABSTRACT CLASS IDENTIFIER extends_declaration LC class_statement_list RC
+                |       CLASS IDENTIFIER implements_declaration LC RC
+                |       ABSTRACT CLASS IDENTIFIER implements_declaration LC RC
+                |       CLASS IDENTIFIER LC class_statement_list implements_declaration RC
+                |       ABSTRACT CLASS IDENTIFIER implements_declaration LC class_statement_list RC
+                |       CLASS IDENTIFIER extends_declaration implements_declaration LC RC
+                |       ABSTRACT CLASS IDENTIFIER extends_declaration implements_declaration LC RC
+                |       CLASS IDENTIFIER LC class_statement_list extends_declaration implements_declaration RC
+                |       ABSTRACT CLASS IDENTIFIER extends_declaration implements_declaration LC class_statement_list RC
+
+// extends声明
+extends_declaration -> EXTENDS IDENTIFIER
+                        | extends_declaration COMMA IDENTIFIER
+
+implements_declaration -> IMPLEMENTS IDENTIFIER
+                        | implements_declaration COMMA IDENTIFIER
 
 class_statement_list -> class_statement
                         | class_statement_list class_statement
@@ -42,8 +58,11 @@ method_definition ->    method_modifier return_val_type IDENTIFIER LP RP block
 return_val_type -> void
                 | IDENTIFIER
 
-parameter_list  ->  IDENTIFIER IDENTIFIER
-                |       IDENTIFIER IDENTIFIER COMMA parameter_list
+parameter_list  ->  parameter
+                |       parameter_list COMMA parameter
+        
+
+parameter -> IDENTIFIER IDENTIFIER
 
 method_modifier -> PUBLIC
                 | PRIVATE
@@ -57,16 +76,14 @@ statement_list  ->  statement
                 |   statement staement_list
 
 statement -> expression SEMICOLON
-        |   IDENTIFIER ASSIGN expression SEMICOLON
-        |   IDENTIFIER DOT IDENTIFIER ASSIGN expression SEMICOLON
-        |   var_declaration ASSIGN expression SEMICOLON // 声明并赋值
+        |   var_declaration_statement
+        |   var_assign_statement
         |   while_statement
         |   if_statement
         |   for_statement
         |   break_statement
         |   continue_statement
         |   return_statement
-        |   var_declaration_statement
                         | 
 
 while_statement ->  WHILE LP expression RP block
@@ -91,7 +108,7 @@ continue_statement -> CONTINUE SEMICOLON
 return_statement -> RETURN SEMICOLON
                 |       RETURN expression SEMICOLON
                         
-var_declaration_statement -> var_declaration SEMICOLON
+var_declaration_statement -> var_declaration SEMICOLON 
 
 var_assign_statement -> var_declaration ASSIGN expression SEMICOLON // 变量声明并赋值
                         |       var_call_expression ASSIGN expression SEMICOLON // 给变量赋值
