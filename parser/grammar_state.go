@@ -6,13 +6,14 @@ import (
 )
 
 type GrammarState struct {
-	gsm           *GrammarStateManager
-	stateNum      int
-	productions   []*Production
-	transition    map[Symbol]*GrammarState // 跳转关系，key为输入的字符，GrammarState为跳转到的状态节点
-	closureSet    []*Production            // 当前节点做闭包操作产生的新生成式
-	closureKeySet map[string]struct{}
-	partition     map[Symbol][]*Production // 用来分区操作
+	gsm            *GrammarStateManager
+	stateNum       int
+	productions    []*Production
+	transition     map[Symbol]*GrammarState // 跳转关系，key为输入的字符，GrammarState为跳转到的状态节点
+	closureSet     []*Production            // 当前节点做闭包操作产生的新生成式
+	closureKeySet  map[string]struct{}
+	partition      map[Symbol][]*Production // 用来分区操作
+	transitionDone bool
 }
 
 func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Production) (gs *GrammarState) {
@@ -52,11 +53,13 @@ func (gs *GrammarState) closure() {
 			break
 		}
 		production = gs.closureSet[i]
-		ps = gs.gsm.pm.getProductions(production.getDotSymbol())
-		for _, p := range ps {
-			if _, exists := gs.closureKeySet[p.str]; !exists {
-				gs.closureSet = append(gs.closureSet, p)
-				gs.closureKeySet[p.str] = struct{}{}
+		if symbol := production.getDotSymbol(); symbol != NilSymbol {
+			ps = gs.gsm.pm.getProductions(production.getDotSymbol())
+			for _, p := range ps {
+				if _, exists := gs.closureKeySet[p.str]; !exists {
+					gs.closureSet = append(gs.closureSet, p)
+					gs.closureKeySet[p.str] = struct{}{}
+				}
 			}
 		}
 		i++
@@ -78,15 +81,23 @@ func (gs *GrammarState) makeTransition() {
 	gs.transition = make(map[Symbol]*GrammarState)
 
 	for symbol, ps := range gs.partition {
-		newGs = gs.gsm.getGrammarState(ps)
+		newGsPs := []*Production{}
+		for _, p := range ps {
+			newGsPs = append(newGsPs, p.dotForward())
+		}
+		newGs = gs.gsm.getGrammarState(newGsPs)
 		gs.transition[symbol] = newGs
 	}
+
+	gs.transitionDone = true
 }
 
 // 扩展下一个节点
 func (gs *GrammarState) extendTransition() {
 	for _, childGs := range gs.transition {
-		childGs.createTransition()
+		if childGs.transitionDone == false {
+			childGs.createTransition()
+		}
 	}
 }
 
@@ -97,9 +108,14 @@ func (gs *GrammarState) createTransition() {
 	gs.extendTransition()
 }
 
+func (gs *GrammarState) equals() {
+
+}
+
 type GrammarStateManager struct {
 	stateNumCount int
 	pm            *ProductionManager
+	stateList     []*GrammarState
 }
 
 func newGrammarStateManager(pm *ProductionManager) (gsm *GrammarStateManager) {
