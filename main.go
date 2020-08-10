@@ -42,6 +42,8 @@ func main() {
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
+
+	return
 	if err != nil {
 		fmt.Println("parse error: %w", err)
 		return
