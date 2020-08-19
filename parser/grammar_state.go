@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"mizar/utils"
 	"strconv"
 )
 
@@ -63,6 +64,56 @@ func (gs *GrammarState) closure() {
 			}
 		}
 		i++
+	}
+}
+
+func (gs *GrammarState) makeClosure() {
+	var (
+		production *Production
+		ps         []*Production
+	)
+
+	pStack := utils.NewStack()
+	for _, p := range gs.productions {
+		pStack.Push(p)
+	}
+
+	for !pStack.Empty() {
+		pInter := pStack.Pop()
+		production := pInter.(*Production)
+		symbol := production.getDotSymbol()
+		if symbol == NilSymbol {
+			continue
+		}
+
+		closures := gs.gsm.pm.getProductions(symbol)
+
+		lookAhead := production.computeFirstSetOfBetaAndC()
+
+		i := 0
+		for i < len(closures) {
+			oldProduction := closures[i]
+			newProduction := oldProduction
+			newProduction.addLookAhead(lookAhead)
+
+			if gs.closureKeySet[newProduction.str] {
+				gs.closureSet.Add(newProduction)
+				pStack.Push(newProduction)
+
+				// 老的表达式中是不是可以被新的表达式覆盖
+				gs.removeRedundantProduction(newProduction)
+			}
+		}
+	}
+}
+
+func (gs *GrammarState) removeRedundantProduction(p *Production) {
+	for _, item := range gs.closureSet {
+		if p.coverUp(item) {
+			removeHappended = true
+			gs.closureSet.remove(item)
+			break
+		}
 	}
 }
 

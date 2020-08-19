@@ -26,3 +26,7 @@ func (s *Stack) Top() interface{} {
 	v := s.list.Back()
 	return v.Value
 }
+
+func (s *Stack) Empty() bool {
+	return s.list.Len() == 0
+}
