@@ -68,11 +68,6 @@ func (gs *GrammarState) closure() {
 }
 
 func (gs *GrammarState) makeClosure() {
-	var (
-		production *Production
-		ps         []*Production
-	)
-
 	pStack := utils.NewStack()
 	for _, p := range gs.productions {
 		pStack.Push(p)
@@ -157,43 +152,4 @@ func (gs *GrammarState) createTransition() {
 	gs.makePartition()
 	gs.makeTransition()
 	gs.extendTransition()
-}
-
-type GrammarStateManager struct {
-	stateNumCount int
-	pm            *ProductionManager
-	states        map[string]*GrammarState
-}
-
-func newGrammarStateManager(pm *ProductionManager) (gsm *GrammarStateManager) {
-	gsm = new(GrammarStateManager)
-	gsm.pm = pm
-	gsm.stateNumCount = 0
-	gsm.states = make(map[string]*GrammarState)
-	return
-}
-
-func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarState) {
-	key := ""
-	for _, p := range ps {
-		key += (p.str + " | ")
-	}
-
-	if s, exists := gsm.states[key]; exists {
-		gs = s
-	} else {
-		gsm.stateNumCount++
-		gs = newGrammarState(gsm, gsm.stateNumCount, ps)
-		gsm.states[key] = gs
-	}
-
-	return
-}
-
-func (gsm *GrammarStateManager) build() *GrammarState {
-	gsm.stateNumCount++
-	gs := newGrammarState(gsm, gsm.stateNumCount, gsm.pm.getProductions(SymbolTranslationUnit))
-	gs.createTransition()
-
-	return gs
 }

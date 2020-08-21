@@ -237,6 +237,6 @@ func (pm *ProductionManager) getProductions(left Symbol) (productions []*Product
 	return pm.productionMap[left]
 }
 
-func (pm *ProductionManager) getFirstSetBuilder() (fsb *FirstSetBuilder) {
-	return
+func (pm *ProductionManager) getFirstSetBuilder() *FirstSetBuilder {
+	return pm.firstSetBuilder
 }
