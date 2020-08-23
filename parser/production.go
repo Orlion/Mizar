@@ -18,6 +18,7 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 	}
 
 	p.str = fmt.Sprintf("%s ->   ", left)
+
 	for k, v := range p.right {
 		if p.dotPos == k {
 			p.str += ".   "
@@ -37,6 +38,7 @@ func (p *Production) getDotSymbol() Symbol {
 	if p.dotPos >= len(p.right) {
 		return NilSymbol
 	}
+
 	return p.right[p.dotPos]
 }
 
@@ -117,6 +119,17 @@ func (p *Production) lookAheadCompare(production *Production) int {
 	return 0
 }
 
-func (p *Production) addLookAhead(lookAhead []Symbol) {
+func (p *Production) addLookAheadSet(lookAhead map[Symbol]struct{}) {
+	p.lookAhead = lookAhead
+}
 
+func (p *Production) cloneSelf() *Production {
+	production := newProduction(p.left, p.right, p.dotPos)
+	production.addLookAheadSet(p.lookAhead)
+
+	return production
+}
+
+func (p *Production) equals(production *Production) bool {
+	return p.str == production.str && 0 == p.lookAheadCompare(production)
 }

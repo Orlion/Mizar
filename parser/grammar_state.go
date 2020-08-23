@@ -33,83 +33,55 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 	return
 }
 
-func (gs *GrammarState) closure() {
-	var (
-		production *Production
-		ps         []*Production
-	)
-
-	gs.closureKeySet = make(map[string]struct{})
-	for _, p := range gs.productions {
-		if _, exists := gs.closureKeySet[p.str]; !exists {
-			gs.closureSet = append(gs.closureSet, p)
-			gs.closureKeySet[p.str] = struct{}{}
-		}
-	}
-
-	// 如果.右侧是非终结符则将其生成式递归加入进来
-	i := 0
-	for {
-		if i >= len(gs.closureSet) {
-			break
-		}
-		production = gs.closureSet[i]
-		if symbol := production.getDotSymbol(); symbol != NilSymbol {
-			ps = gs.gsm.pm.getProductions(production.getDotSymbol())
-			for _, p := range ps {
-				if _, exists := gs.closureKeySet[p.str]; !exists {
-					gs.closureSet = append(gs.closureSet, p)
-					gs.closureKeySet[p.str] = struct{}{}
-				}
-			}
-		}
-		i++
-	}
-}
-
 func (gs *GrammarState) makeClosure() {
 	pStack := utils.NewStack()
+	// 先将当前节点的所有生成式加入到栈中
 	for _, p := range gs.productions {
 		pStack.Push(p)
 	}
 
 	for !pStack.Empty() {
+		// 弹出栈顶生成式
 		pInter := pStack.Pop()
 		production := pInter.(*Production)
 		symbol := production.getDotSymbol()
-		if symbol == NilSymbol {
+		// 如果生成式.的右边的符号是终结符则直接跳过
+		if symbol.isTerminals() {
 			continue
 		}
 
-		closures := gs.gsm.pm.getProductions(symbol)
-
+		// 从pm中查出以该符号为目标符号的所有生成式
+		closures := getProductionManager().getProductions(symbol)
+		// 获取当前生成式的lookAhead集合
 		lookAhead := production.computeFirstSetOfBetaAndC()
 
-		i := 0
-		for i < len(closures) {
-			oldProduction := closures[i]
-			newProduction := oldProduction
-			newProduction.addLookAhead(lookAhead)
+		for _, oldProduct := range closures {
+			newProduct := oldProduct.cloneSelf()
+			newProduct.addLookAheadSet(lookAhead)
 
-			if gs.closureKeySet[newProduction.str] {
-				gs.closureSet.Add(newProduction)
-				pStack.Push(newProduction)
+			if _, exists := gs.closureKeySet[newProduct.str]; !exists {
+				gs.closureSet = append(gs.closureSet, newProduct)
+				gs.closureKeySet[newProduct.str] = struct{}{}
 
-				// 老的表达式中是不是可以被新的表达式覆盖
-				gs.removeRedundantProduction(newProduction)
+				pStack.Push(newProduct)
+
+				gs.removeRedundantProduction(newProduct)
 			}
 		}
 	}
 }
 
 func (gs *GrammarState) removeRedundantProduction(p *Production) {
+	target := gs.closureSet[:0]
 	for _, item := range gs.closureSet {
 		if p.coverUp(item) {
-			removeHappended = true
-			gs.closureSet.remove(item)
 			break
 		}
+
+		target = append(target, item)
 	}
+
+	gs.closureSet = target
 }
 
 // 分区, 将.右侧相同非终结符的生成式划分到同一分区
@@ -148,7 +120,7 @@ func (gs *GrammarState) extendTransition() {
 }
 
 func (gs *GrammarState) createTransition() {
-	gs.closure()
+	gs.makeClosure()
 	gs.makePartition()
 	gs.makeTransition()
 	gs.extendTransition()

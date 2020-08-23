@@ -31,7 +31,6 @@ func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarSt
 }
 
 func (gsm *GrammarStateManager) build() *GrammarState {
-	``
 	gsm.stateNumCount++
 	gs := newGrammarState(gsm, gsm.stateNumCount, getProductionManager().getProductions(SymbolTranslationUnit))
 	gs.createTransition()
