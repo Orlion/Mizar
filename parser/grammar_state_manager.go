@@ -2,7 +2,6 @@ package parser
 
 type GrammarStateManager struct {
 	stateNumCount int
-	pm            *ProductionManager
 	states        map[string]*GrammarState
 }
 
@@ -16,7 +15,7 @@ func newGrammarStateManager() (gsm *GrammarStateManager) {
 func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarState) {
 	key := ""
 	for _, p := range ps {
-		key += (p.str + " | ")
+		key += (p.getCode() + " | ")
 	}
 
 	if s, exists := gsm.states[key]; exists {

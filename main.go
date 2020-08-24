@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func a() {
+func main() {
 	var (
 		logLevel uint
 		dumpAst  bool

@@ -10,6 +10,7 @@ type FirstSetBuilder struct {
 func newFirstSetBuilder() *FirstSetBuilder {
 	firstSetBuilder := new(FirstSetBuilder)
 	firstSetBuilder.runFirstSetPass = true
+	firstSetBuilder.initProductions()
 	return firstSetBuilder
 }
 
@@ -45,35 +46,35 @@ func (fsb *FirstSetBuilder) initProductions() {
 	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList, SymbolClassInterfaceDeclaration})
 	classInterfaceDeclarationList := newSymbols(SymbolClassInterfaceDeclarationList, false, productions)
 	fsb.symbolMap[SymbolClassInterfaceDeclarationList] = classInterfaceDeclarationList
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclarationList)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolClassDeclaration})
 	productions = append(productions, []Symbol{SymbolInterfaceDeclaration})
 	classInterfaceDeclaration := newSymbols(SymbolClassInterfaceDeclaration, false, productions)
 	fsb.symbolMap[SymbolClassInterfaceDeclaration] = classInterfaceDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclaration)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolRc})
 	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolInterfaceMethodDeclarationStatementList, SymbolRc})
 	interfaceDeclaration := newSymbols(SymbolInterfaceDeclaration, false, productions)
 	fsb.symbolMap[SymbolInterfaceDeclaration] = interfaceDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, interfaceDeclaration)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatement})
 	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatementList, SymbolInterfaceMethodDeclarationStatement})
 	interfaceMethodDeclarationStatementList := newSymbols(SymbolInterfaceMethodDeclarationStatementList, false, productions)
 	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatementList] = interfaceMethodDeclarationStatementList
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatementList)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp})
 	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp})
 	interfaceMethodDeclarationStatement := newSymbols(SymbolInterfaceMethodDeclarationStatement, false, productions)
 	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatement] = interfaceMethodDeclarationStatement
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatement)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolRc})
@@ -94,21 +95,21 @@ func (fsb *FirstSetBuilder) initProductions() {
 	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
 	classDeclaration := newSymbols(SymbolClassDeclaration, false, productions)
 	fsb.symbolMap[SymbolClassDeclaration] = classDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, classDeclaration)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolExtends, SymbolIdentifier})
 	productions = append(productions, []Symbol{SymbolExtends, SymbolComma, SymbolIdentifier})
 	extendsDelcaration := newSymbols(SymbolExtendsDelcaration, false, productions)
 	fsb.symbolMap[SymbolExtendsDelcaration] = extendsDelcaration
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, extendsDelcaration)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolImplements, SymbolIdentifier})
 	productions = append(productions, []Symbol{SymbolImplementsDeclaration, SymbolComma, SymbolIdentifier})
 	implementsDeclaration := newSymbols(SymbolImplementsDeclaration, false, productions)
 	fsb.symbolMap[SymbolImplementsDeclaration] = implementsDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
+	fsb.symbolArr = append(fsb.symbolArr, implementsDeclaration)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolClassStatement})

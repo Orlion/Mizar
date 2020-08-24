@@ -1,11 +1,14 @@
 package parser
 
-import "unicode"
+import (
+	"unicode"
+)
 
 type Symbol string
 
 const (
-	NilSymbol                                     Symbol = ""
+	NilSymbol                                     Symbol = "NIL"
+	EOISymbol                                     Symbol = "EOI"
 	SymbolStringLiteral                           Symbol = "STRING_LITERAL"
 	SymbolIntLiteral                              Symbol = "INT_LITERAL"
 	SymbolDoubleLiteral                           Symbol = "DOUBLE_LITERAL"

@@ -22,13 +22,7 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 	gs.gsm = gsm
 	gs.stateNum = stateNum
 	gs.productions = productions
-
-	fmt.Println("newGrammarState: " + strconv.Itoa(stateNum))
-	for _, p := range productions {
-		p.print()
-	}
-	fmt.Println()
-	fmt.Println()
+	gs.closureKeySet = make(map[string]struct{})
 
 	return
 }
@@ -59,9 +53,9 @@ func (gs *GrammarState) makeClosure() {
 			newProduct := oldProduct.cloneSelf()
 			newProduct.addLookAheadSet(lookAhead)
 
-			if _, exists := gs.closureKeySet[newProduct.str]; !exists {
+			if _, exists := gs.closureKeySet[newProduct.getCode()]; !exists {
 				gs.closureSet = append(gs.closureSet, newProduct)
-				gs.closureKeySet[newProduct.str] = struct{}{}
+				gs.closureKeySet[newProduct.getCode()] = struct{}{}
 
 				pStack.Push(newProduct)
 
@@ -124,4 +118,19 @@ func (gs *GrammarState) createTransition() {
 	gs.makePartition()
 	gs.makeTransition()
 	gs.extendTransition()
+}
+
+func (gs *GrammarState) print() {
+	fmt.Println("GrammarState: " + strconv.Itoa(gs.stateNum))
+
+	for _, p := range gs.productions {
+		p.print()
+	}
+
+	fmt.Println()
+	fmt.Println()
+
+	for _, child := range gs.transition {
+		child.print()
+	}
 }

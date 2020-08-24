@@ -1,9 +1,12 @@
 package parser
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Production struct {
-	str       string   // 转成字符串表示
+	code      string   // 转成字符串表示, 用来标识生成式唯一
 	left      Symbol   // 左侧非终结符
 	right     []Symbol // 右侧符号列表
 	dotPos    int      // .的位置
@@ -17,14 +20,7 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 		dotPos: dotPos,
 	}
 
-	p.str = fmt.Sprintf("%s ->   ", left)
-
-	for k, v := range p.right {
-		if p.dotPos == k {
-			p.str += ".   "
-		}
-		p.str += (string(v) + "   ")
-	}
+	p.lookAhead = map[Symbol]struct{}{EOISymbol: {}}
 
 	return
 }
@@ -43,29 +39,41 @@ func (p *Production) getDotSymbol() Symbol {
 }
 
 func (p *Production) print() {
-	fmt.Println(p.str)
+	fmt.Println(p.getCode())
 }
 
-// 计算β与C并集
+/**
+ * 计算First(β C)
+ * 将β与C前后相连再计算他们的First集合，如果β里面的每一项都是nullable的，那么First(β C)就是First(β) 并上First(C)
+ * 由于C必定是终结符的组合，所以First(C)等于C的第一个终结符，例如C = {+, *, EOI} 那么First(C) = {+}
+ */
 func (p *Production) computeFirstSetOfBetaAndC() map[Symbol]struct{} {
+	set := make(map[Symbol]struct{})
+
+	for i := p.dotPos + 1; i < len(p.right); i++ {
+		set[p.right[i]] = struct{}{}
+	}
+
+	for s, _ := range p.lookAhead {
+		set[s] = struct{}{}
+	}
+
 	pm := getProductionManager()
 
-	set := p.lookAhead
+	firstSet := make(map[Symbol]struct{})
 
-	for _, item := range p.right {
-		firstSet := pm.getFirstSetBuilder().getFirstSet(item)
-		for symbol, _ := range firstSet {
-			if _, exists := set[symbol]; !exists {
-				set[symbol] = struct{}{}
-			}
+	for s, _ := range set {
+		lookAhead := pm.getFirstSetBuilder().getFirstSet(s)
+		for s1, _ := range lookAhead {
+			firstSet[s1] = struct{}{}
 		}
 
-		if !pm.getFirstSetBuilder().isSymbolNullable(item) {
+		if !pm.getFirstSetBuilder().isSymbolNullable(s) {
 			break
 		}
 	}
 
-	return set
+	return firstSet
 }
 
 // equals还要判断lookAhead是否相同
@@ -131,5 +139,30 @@ func (p *Production) cloneSelf() *Production {
 }
 
 func (p *Production) equals(production *Production) bool {
-	return p.str == production.str && 0 == p.lookAheadCompare(production)
+	return p.getCode() == production.getCode() && 0 == p.lookAheadCompare(production)
+}
+
+func (p *Production) getCode() string {
+	if p.code == "" {
+		var codeBuilder strings.Builder
+
+		codeBuilder.WriteString(fmt.Sprintf("%s ->   ", p.left))
+		for k, v := range p.right {
+			if p.dotPos == k {
+				codeBuilder.WriteString(".   ")
+			}
+			codeBuilder.WriteString(string(v))
+			codeBuilder.WriteString("   ")
+		}
+
+		codeBuilder.WriteString("(")
+		for k, _ := range p.lookAhead {
+			codeBuilder.WriteString(string(k))
+		}
+		codeBuilder.WriteString(")")
+
+		p.code = codeBuilder.String()
+	}
+
+	return p.code
 }
