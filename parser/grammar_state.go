@@ -6,7 +6,11 @@ import (
 	"strconv"
 )
 
+var aaa = 0
+
 type GrammarState struct {
+	fromStateNum   int
+	edge           Symbol
 	gsm            *GrammarStateManager
 	stateNum       int
 	productions    []*Production
@@ -17,12 +21,22 @@ type GrammarState struct {
 	transitionDone bool
 }
 
-func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Production) (gs *GrammarState) {
+func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Production, fromStateNum int, edge Symbol) (gs *GrammarState) {
 	gs = new(GrammarState)
+	gs.fromStateNum = fromStateNum
+	gs.edge = edge
 	gs.gsm = gsm
 	gs.stateNum = stateNum
 	gs.productions = productions
 	gs.closureKeySet = make(map[string]struct{})
+	for _, p := range productions {
+		if _, exists := gs.closureKeySet[p.getCode()]; !exists {
+			gs.closureSet = append(gs.closureSet, p)
+			gs.closureKeySet[p.getCode()] = struct{}{}
+		}
+	}
+
+	gs.print()
 
 	return
 }
@@ -47,6 +61,7 @@ func (gs *GrammarState) makeClosure() {
 		// 从pm中查出以该符号为目标符号的所有生成式
 		closures := getProductionManager().getProductions(symbol)
 		// 获取当前生成式的lookAhead集合
+
 		lookAhead := production.computeFirstSetOfBetaAndC()
 
 		for _, oldProduct := range closures {
@@ -66,10 +81,10 @@ func (gs *GrammarState) makeClosure() {
 }
 
 func (gs *GrammarState) removeRedundantProduction(p *Production) {
-	target := gs.closureSet[:0]
+	target := []*Production{}
 	for _, item := range gs.closureSet {
 		if p.coverUp(item) {
-			break
+			continue
 		}
 
 		target = append(target, item)
@@ -82,7 +97,9 @@ func (gs *GrammarState) removeRedundantProduction(p *Production) {
 func (gs *GrammarState) makePartition() {
 	gs.partition = make(map[Symbol][]*Production)
 	for _, p := range gs.closureSet {
-		gs.partition[p.getDotSymbol()] = append(gs.partition[p.getDotSymbol()], p)
+		if p.getDotSymbol() != NilSymbol {
+			gs.partition[p.getDotSymbol()] = append(gs.partition[p.getDotSymbol()], p)
+		}
 	}
 }
 
@@ -97,7 +114,7 @@ func (gs *GrammarState) makeTransition() {
 		for _, p := range ps {
 			newGsPs = append(newGsPs, p.dotForward())
 		}
-		newGs = gs.gsm.getGrammarState(newGsPs)
+		newGs = gs.gsm.getGrammarState(newGsPs, gs.stateNum, symbol)
 		gs.transition[symbol] = newGs
 	}
 
@@ -121,7 +138,7 @@ func (gs *GrammarState) createTransition() {
 }
 
 func (gs *GrammarState) print() {
-	fmt.Println("GrammarState: " + strconv.Itoa(gs.stateNum))
+	fmt.Println("GrammarState: " + strconv.Itoa(gs.stateNum) + "  <- " + string(gs.edge) + " " + strconv.Itoa(gs.fromStateNum))
 
 	for _, p := range gs.productions {
 		p.print()
@@ -129,8 +146,4 @@ func (gs *GrammarState) print() {
 
 	fmt.Println()
 	fmt.Println()
-
-	for _, child := range gs.transition {
-		child.print()
-	}
 }

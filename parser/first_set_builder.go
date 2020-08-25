@@ -425,25 +425,25 @@ func (fsb *FirstSetBuilder) initProductions() {
 	fsb.symbolMap[SymbolImplements] = implements
 	fsb.symbolArr = append(fsb.symbolArr, implements)
 
-	extends := newSymbols(SymbolExtends, false, nil)
-	fsb.symbolMap[SymbolExtends] = extends
-	fsb.symbolArr = append(fsb.symbolArr, extends)
-
-	void := newSymbols(SymbolVoid, false, nil)
-	fsb.symbolMap[SymbolVoid] = void
-	fsb.symbolArr = append(fsb.symbolArr, void)
-
-	public := newSymbols(SymbolPublic, false, nil)
-	fsb.symbolMap[SymbolPublic] = public
-	fsb.symbolArr = append(fsb.symbolArr, public)
+	protected := newSymbols(SymbolProtected, false, nil)
+	fsb.symbolMap[SymbolProtected] = protected
+	fsb.symbolArr = append(fsb.symbolArr, protected)
 
 	private := newSymbols(SymbolPrivate, false, nil)
 	fsb.symbolMap[SymbolPrivate] = private
 	fsb.symbolArr = append(fsb.symbolArr, private)
 
-	protected := newSymbols(SymbolProtected, false, nil)
-	fsb.symbolMap[SymbolProtected] = protected
-	fsb.symbolArr = append(fsb.symbolArr, protected)
+	public := newSymbols(SymbolPublic, false, nil)
+	fsb.symbolMap[SymbolPublic] = public
+	fsb.symbolArr = append(fsb.symbolArr, public)
+
+	void := newSymbols(SymbolVoid, false, nil)
+	fsb.symbolMap[SymbolVoid] = void
+	fsb.symbolArr = append(fsb.symbolArr, void)
+
+	extends := newSymbols(SymbolExtends, false, nil)
+	fsb.symbolMap[SymbolExtends] = extends
+	fsb.symbolArr = append(fsb.symbolArr, extends)
 }
 
 func (fsb *FirstSetBuilder) runFirstSets() {

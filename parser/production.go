@@ -27,7 +27,12 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 
 // .前移
 func (p *Production) dotForward() *Production {
-	return newProduction(p.left, p.right, p.dotPos+1)
+	newProduct := newProduction(p.left, p.right, p.dotPos+1)
+	for s, v := range p.lookAhead {
+		newProduct.lookAhead[s] = v
+	}
+
+	return newProduct
 }
 
 func (p *Production) getDotSymbol() Symbol {
@@ -48,21 +53,26 @@ func (p *Production) print() {
  * 由于C必定是终结符的组合，所以First(C)等于C的第一个终结符，例如C = {+, *, EOI} 那么First(C) = {+}
  */
 func (p *Production) computeFirstSetOfBetaAndC() map[Symbol]struct{} {
-	set := make(map[Symbol]struct{})
+	set := []Symbol{}
+	setKeys := map[Symbol]struct{}{}
 
 	for i := p.dotPos + 1; i < len(p.right); i++ {
-		set[p.right[i]] = struct{}{}
+		if _, exists := setKeys[p.right[i]]; !exists {
+			set = append(set, p.right[i])
+		}
 	}
 
 	for s, _ := range p.lookAhead {
-		set[s] = struct{}{}
+		if _, exists := setKeys[s]; !exists {
+			set = append(set, s)
+		}
 	}
 
 	pm := getProductionManager()
 
 	firstSet := make(map[Symbol]struct{})
 
-	for s, _ := range set {
+	for _, s := range set {
 		lookAhead := pm.getFirstSetBuilder().getFirstSet(s)
 		for s1, _ := range lookAhead {
 			firstSet[s1] = struct{}{}
@@ -132,10 +142,13 @@ func (p *Production) addLookAheadSet(lookAhead map[Symbol]struct{}) {
 }
 
 func (p *Production) cloneSelf() *Production {
-	production := newProduction(p.left, p.right, p.dotPos)
-	production.addLookAheadSet(p.lookAhead)
+	product := newProduction(p.left, p.right, p.dotPos)
+	product.lookAhead = make(map[Symbol]struct{})
+	for s, v := range p.lookAhead {
+		product.lookAhead[s] = v
+	}
 
-	return production
+	return product
 }
 
 func (p *Production) equals(production *Production) bool {
@@ -158,6 +171,7 @@ func (p *Production) getCode() string {
 		codeBuilder.WriteString("(")
 		for k, _ := range p.lookAhead {
 			codeBuilder.WriteString(string(k))
+			codeBuilder.WriteString(" ")
 		}
 		codeBuilder.WriteString(")")
 

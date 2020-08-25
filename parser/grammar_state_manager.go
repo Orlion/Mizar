@@ -12,7 +12,7 @@ func newGrammarStateManager() (gsm *GrammarStateManager) {
 	return
 }
 
-func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarState) {
+func (gsm *GrammarStateManager) getGrammarState(ps []*Production, fromStateNum int, edge Symbol) (gs *GrammarState) {
 	key := ""
 	for _, p := range ps {
 		key += (p.getCode() + " | ")
@@ -22,7 +22,7 @@ func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarSt
 		gs = s
 	} else {
 		gsm.stateNumCount++
-		gs = newGrammarState(gsm, gsm.stateNumCount, ps)
+		gs = newGrammarState(gsm, gsm.stateNumCount, ps, fromStateNum, edge)
 		gsm.states[key] = gs
 	}
 
@@ -31,7 +31,7 @@ func (gsm *GrammarStateManager) getGrammarState(ps []*Production) (gs *GrammarSt
 
 func (gsm *GrammarStateManager) build() *GrammarState {
 	gsm.stateNumCount++
-	gs := newGrammarState(gsm, gsm.stateNumCount, getProductionManager().getProductions(SymbolTranslationUnit))
+	gs := newGrammarState(gsm, gsm.stateNumCount, getProductionManager().getProductions(SymbolTranslationUnit), -1, "")
 	gs.createTransition()
 
 	return gs
