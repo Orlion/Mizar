@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"mizar/utils"
+	"sort"
 	"strconv"
 )
 
@@ -30,9 +31,9 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 	gs.productions = productions
 	gs.closureKeySet = make(map[string]struct{})
 	for _, p := range productions {
-		if _, exists := gs.closureKeySet[p.getCode()]; !exists {
+		if _, exists := gs.closureKeySet[p.GetCode()]; !exists {
 			gs.closureSet = append(gs.closureSet, p)
-			gs.closureKeySet[p.getCode()] = struct{}{}
+			gs.closureKeySet[p.GetCode()] = struct{}{}
 		}
 	}
 
@@ -60,17 +61,17 @@ func (gs *GrammarState) makeClosure() {
 
 		// 从pm中查出以该符号为目标符号的所有生成式
 		closures := getProductionManager().getProductions(symbol)
-		// 获取当前生成式的lookAhead集合
 
+		// 获取当前生成式的lookAhead集合
 		lookAhead := production.computeFirstSetOfBetaAndC()
 
 		for _, oldProduct := range closures {
 			newProduct := oldProduct.cloneSelf()
 			newProduct.addLookAheadSet(lookAhead)
 
-			if _, exists := gs.closureKeySet[newProduct.getCode()]; !exists {
+			if _, exists := gs.closureKeySet[newProduct.GetCode()]; !exists {
 				gs.closureSet = append(gs.closureSet, newProduct)
-				gs.closureKeySet[newProduct.getCode()] = struct{}{}
+				gs.closureKeySet[newProduct.GetCode()] = struct{}{}
 
 				pStack.Push(newProduct)
 
@@ -109,13 +110,20 @@ func (gs *GrammarState) makeTransition() {
 
 	gs.transition = make(map[Symbol]*GrammarState)
 
-	for symbol, ps := range gs.partition {
+	symbolStrList := make([]string, 0)
+	for symbol, _ := range gs.partition {
+		symbolStrList = append(symbolStrList, string(symbol))
+	}
+
+	sort.Strings(symbolStrList)
+
+	for _, symbolStr := range symbolStrList {
 		newGsPs := []*Production{}
-		for _, p := range ps {
+		for _, p := range gs.partition[Symbol(symbolStr)] {
 			newGsPs = append(newGsPs, p.dotForward())
 		}
-		newGs = gs.gsm.getGrammarState(newGsPs, gs.stateNum, symbol)
-		gs.transition[symbol] = newGs
+		newGs = gs.gsm.getGrammarState(newGsPs, gs.stateNum, Symbol(symbolStr))
+		gs.transition[Symbol(symbolStr)] = newGs
 	}
 
 	gs.transitionDone = true
@@ -123,7 +131,16 @@ func (gs *GrammarState) makeTransition() {
 
 // 扩展下一个节点
 func (gs *GrammarState) extendTransition() {
-	for _, childGs := range gs.transition {
+	// 把key拿出来排序后再根据key遍历transition
+	symbolStrList := make([]string, 0)
+	for symbol, _ := range gs.transition {
+		symbolStrList = append(symbolStrList, string(symbol))
+	}
+
+	sort.Strings(symbolStrList)
+
+	for _, symbolStr := range symbolStrList {
+		childGs := gs.transition[Symbol(symbolStr)]
 		if childGs.transitionDone == false {
 			childGs.createTransition()
 		}
@@ -134,6 +151,11 @@ func (gs *GrammarState) createTransition() {
 	gs.makeClosure()
 	gs.makePartition()
 	gs.makeTransition()
+
+	if gs.stateNum == 25 {
+		return
+	}
+
 	gs.extendTransition()
 }
 
@@ -146,4 +168,22 @@ func (gs *GrammarState) print() {
 
 	fmt.Println()
 	fmt.Println()
+}
+
+func (gs *GrammarState) equals(other *GrammarState) bool {
+	if len(gs.productions) != len(other.productions) {
+		return false
+	}
+
+	equalsCount := 0
+	for _, gsP := range gs.productions {
+		for _, oP := range other.productions {
+			if gsP.equals(oP) {
+				equalsCount++
+				break
+			}
+		}
+	}
+
+	return equalsCount == len(gs.productions)
 }

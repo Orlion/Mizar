@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -44,7 +45,7 @@ func (p *Production) getDotSymbol() Symbol {
 }
 
 func (p *Production) print() {
-	fmt.Println(p.getCode())
+	fmt.Println(p.GetCode())
 }
 
 /**
@@ -152,10 +153,10 @@ func (p *Production) cloneSelf() *Production {
 }
 
 func (p *Production) equals(production *Production) bool {
-	return p.getCode() == production.getCode() && 0 == p.lookAheadCompare(production)
+	return p.GetCode() == production.GetCode() && 0 == p.lookAheadCompare(production)
 }
 
-func (p *Production) getCode() string {
+func (p *Production) GetCode() string {
 	if p.code == "" {
 		var codeBuilder strings.Builder
 
@@ -169,10 +170,21 @@ func (p *Production) getCode() string {
 		}
 
 		codeBuilder.WriteString("(")
+
+		// 将无序的set转为有序的list
+		list := make([]string, 0)
+
 		for k, _ := range p.lookAhead {
-			codeBuilder.WriteString(string(k))
+			list = append(list, string(k))
+		}
+
+		// 对list排序
+		sort.Strings(list)
+		for _, s := range list {
+			codeBuilder.WriteString(s)
 			codeBuilder.WriteString(" ")
 		}
+
 		codeBuilder.WriteString(")")
 
 		p.code = codeBuilder.String()

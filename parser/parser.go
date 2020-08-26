@@ -21,8 +21,7 @@ var EofError = errors.New("eof error") // 未parse完成但没有更多输入
 // 自底向上分析
 func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 	gsm := newGrammarStateManager()
-	gs := gsm.build()
-	gs.print()
+	gsm.build()
 	// var (
 	// 	token      *lexer.Token
 	// 	stateInter interface{}

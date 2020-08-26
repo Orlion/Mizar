@@ -1,5 +1,10 @@
 package parser
 
+import (
+	"sort"
+	"strings"
+)
+
 type GrammarStateManager struct {
 	stateNumCount int
 	states        map[string]*GrammarState
@@ -13,10 +18,13 @@ func newGrammarStateManager() (gsm *GrammarStateManager) {
 }
 
 func (gsm *GrammarStateManager) getGrammarState(ps []*Production, fromStateNum int, edge Symbol) (gs *GrammarState) {
-	key := ""
+	keyList := make([]string, 0)
 	for _, p := range ps {
-		key += (p.getCode() + " | ")
+		keyList = append(keyList, p.GetCode())
 	}
+
+	sort.Strings(keyList)
+	key := strings.Join(keyList, " | ")
 
 	if s, exists := gsm.states[key]; exists {
 		gs = s
