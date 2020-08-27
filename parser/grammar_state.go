@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"mizar/utils"
-	"sort"
 	"strconv"
 )
 
@@ -110,20 +109,14 @@ func (gs *GrammarState) makeTransition() {
 
 	gs.transition = make(map[Symbol]*GrammarState)
 
-	symbolStrList := make([]string, 0)
-	for symbol, _ := range gs.partition {
-		symbolStrList = append(symbolStrList, string(symbol))
-	}
-
-	sort.Strings(symbolStrList)
-
-	for _, symbolStr := range symbolStrList {
+	for symbol, ps := range gs.partition {
 		newGsPs := []*Production{}
-		for _, p := range gs.partition[Symbol(symbolStr)] {
+		for _, p := range ps {
 			newGsPs = append(newGsPs, p.dotForward())
 		}
-		newGs = gs.gsm.getGrammarState(newGsPs, gs.stateNum, Symbol(symbolStr))
-		gs.transition[Symbol(symbolStr)] = newGs
+
+		newGs = gs.gsm.getGrammarState(newGsPs, gs.stateNum, symbol)
+		gs.transition[symbol] = newGs
 	}
 
 	gs.transitionDone = true
@@ -131,16 +124,7 @@ func (gs *GrammarState) makeTransition() {
 
 // 扩展下一个节点
 func (gs *GrammarState) extendTransition() {
-	// 把key拿出来排序后再根据key遍历transition
-	symbolStrList := make([]string, 0)
-	for symbol, _ := range gs.transition {
-		symbolStrList = append(symbolStrList, string(symbol))
-	}
-
-	sort.Strings(symbolStrList)
-
-	for _, symbolStr := range symbolStrList {
-		childGs := gs.transition[Symbol(symbolStr)]
+	for _, childGs := range gs.transition {
 		if childGs.transitionDone == false {
 			childGs.createTransition()
 		}
@@ -148,13 +132,13 @@ func (gs *GrammarState) extendTransition() {
 }
 
 func (gs *GrammarState) createTransition() {
+	if gs.stateNum == 10 {
+		fmt.Println("fuck")
+	}
+
 	gs.makeClosure()
 	gs.makePartition()
 	gs.makeTransition()
-
-	if gs.stateNum == 25 {
-		return
-	}
 
 	gs.extendTransition()
 }

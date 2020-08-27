@@ -14,7 +14,7 @@ func newFirstSetBuilder() *FirstSetBuilder {
 	return firstSetBuilder
 }
 
-func (fsb *FirstSetBuilder) getFirstSet(s Symbol) map[Symbol]struct{} {
+func (fsb *FirstSetBuilder) getFirstSet(s Symbol) []Symbol {
 	for _, symbols := range fsb.symbolArr {
 		if symbols.value == s {
 			return symbols.firstSet
@@ -313,6 +313,10 @@ func (fsb *FirstSetBuilder) initProductions() {
 	fsb.symbolMap[SymbolArgumentList] = argumentList
 	fsb.symbolArr = append(fsb.symbolArr, argumentList)
 
+	eoi := newSymbols(EOISymbol, false, nil)
+	fsb.symbolMap[EOISymbol] = eoi
+	fsb.symbolArr = append(fsb.symbolArr, eoi)
+
 	stringLiteral := newSymbols(SymbolStringLiteral, false, nil)
 	fsb.symbolMap[SymbolStringLiteral] = stringLiteral
 	fsb.symbolArr = append(fsb.symbolArr, stringLiteral)
@@ -458,8 +462,9 @@ func (fsb *FirstSetBuilder) runFirstSets() {
 func (fsb *FirstSetBuilder) addSymbolFirstSet(symbols *Symbols) {
 	// 如果符号是终结符那它的firstSet就是它自己
 	if symbols.value.isTerminals() {
-		if _, exists := symbols.firstSet[symbols.value]; !exists {
-			symbols.firstSet[symbols.value] = struct{}{}
+		if _, exists := symbols.firstSetKeys[symbols.value]; !exists {
+			symbols.firstSet = append(symbols.firstSet, symbols.value)
+			symbols.firstSetKeys[symbols.value] = struct{}{}
 		}
 
 		return
@@ -473,18 +478,20 @@ func (fsb *FirstSetBuilder) addSymbolFirstSet(symbols *Symbols) {
 
 		if p[0].isTerminals() {
 			// 如果生成式的第一个符号是终结符并且该符号不在当前符号的firstSet中则加入进来
-			if _, exists := symbols.firstSet[p[0]]; !exists {
+			if _, exists := symbols.firstSetKeys[p[0]]; !exists {
 				fsb.runFirstSetPass = true
-				symbols.firstSet[p[0]] = struct{}{}
+				symbols.firstSet = append(symbols.firstSet, p[0])
+				symbols.firstSetKeys[p[0]] = struct{}{}
 			}
 		} else if !p[0].isTerminals() {
 			// 如果生成式的第一个符号是非终结符则遍历生成式的每个符号
 			for _, curSymbol := range p {
 				curSymbols := fsb.symbolMap[curSymbol]
 				// 将每个符号的firstSet中的符号添加到该符号的firstSet中并标识runFirstSetPass为false
-				for s, _ := range curSymbols.firstSet {
-					if _, exists := symbols.firstSet[s]; !exists {
-						symbols.firstSet[s] = struct{}{}
+				for _, s := range curSymbols.firstSet {
+					if _, exists := symbols.firstSetKeys[s]; !exists {
+						symbols.firstSet = append(symbols.firstSet, s)
+						symbols.firstSetKeys[s] = struct{}{}
 						fsb.runFirstSetPass = false
 					}
 				}

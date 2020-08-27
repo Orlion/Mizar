@@ -2,16 +2,16 @@ package parser
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
 type Production struct {
-	code      string   // 转成字符串表示, 用来标识生成式唯一
-	left      Symbol   // 左侧非终结符
-	right     []Symbol // 右侧符号列表
-	dotPos    int      // .的位置
-	lookAhead map[Symbol]struct{}
+	code          string   // 转成字符串表示, 用来标识生成式唯一
+	left          Symbol   // 左侧非终结符
+	right         []Symbol // 右侧符号列表
+	dotPos        int      // .的位置
+	lookAhead     []Symbol
+	lookAheadKeys map[Symbol]struct{}
 }
 
 func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
@@ -21,7 +21,8 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 		dotPos: dotPos,
 	}
 
-	p.lookAhead = map[Symbol]struct{}{EOISymbol: {}}
+	p.lookAhead = []Symbol{EOISymbol}
+	p.lookAheadKeys = map[Symbol]struct{}{EOISymbol: {}}
 
 	return
 }
@@ -53,7 +54,7 @@ func (p *Production) print() {
  * 将β与C前后相连再计算他们的First集合，如果β里面的每一项都是nullable的，那么First(β C)就是First(β) 并上First(C)
  * 由于C必定是终结符的组合，所以First(C)等于C的第一个终结符，例如C = {+, *, EOI} 那么First(C) = {+}
  */
-func (p *Production) computeFirstSetOfBetaAndC() map[Symbol]struct{} {
+func (p *Production) computeFirstSetOfBetaAndC() []Symbol {
 	set := []Symbol{}
 	setKeys := map[Symbol]struct{}{}
 
@@ -63,7 +64,7 @@ func (p *Production) computeFirstSetOfBetaAndC() map[Symbol]struct{} {
 		}
 	}
 
-	for s, _ := range p.lookAhead {
+	for _, s := range p.lookAhead {
 		if _, exists := setKeys[s]; !exists {
 			set = append(set, s)
 		}
@@ -71,12 +72,12 @@ func (p *Production) computeFirstSetOfBetaAndC() map[Symbol]struct{} {
 
 	pm := getProductionManager()
 
-	firstSet := make(map[Symbol]struct{})
+	firstSet := []Symbol{}
 
 	for _, s := range set {
 		lookAhead := pm.getFirstSetBuilder().getFirstSet(s)
-		for s1, _ := range lookAhead {
-			firstSet[s1] = struct{}{}
+		for _, s1 := range lookAhead {
+			firstSet = append(firstSet, s1)
 		}
 
 		if !pm.getFirstSetBuilder().isSymbolNullable(s) {
@@ -129,8 +130,8 @@ func (p *Production) lookAheadCompare(production *Production) int {
 		return 1
 	}
 
-	for symbol, _ := range p.lookAhead {
-		if _, exists := production.lookAhead[symbol]; !exists {
+	for _, symbol := range p.lookAhead {
+		if _, exists := production.lookAheadKeys[symbol]; !exists {
 			return -1
 		}
 	}
@@ -138,15 +139,18 @@ func (p *Production) lookAheadCompare(production *Production) int {
 	return 0
 }
 
-func (p *Production) addLookAheadSet(lookAhead map[Symbol]struct{}) {
+func (p *Production) addLookAheadSet(lookAhead []Symbol) {
 	p.lookAhead = lookAhead
 }
 
 func (p *Production) cloneSelf() *Production {
 	product := newProduction(p.left, p.right, p.dotPos)
-	product.lookAhead = make(map[Symbol]struct{})
-	for s, v := range p.lookAhead {
-		product.lookAhead[s] = v
+	product.lookAheadKeys = make(map[Symbol]struct{})
+	for _, s := range p.lookAhead {
+		if _, exists := product.lookAheadKeys[s]; !exists {
+			product.lookAhead = append(product.lookAhead, s)
+			product.lookAheadKeys[s] = struct{}{}
+		}
 	}
 
 	return product
@@ -174,12 +178,11 @@ func (p *Production) GetCode() string {
 		// 将无序的set转为有序的list
 		list := make([]string, 0)
 
-		for k, _ := range p.lookAhead {
+		for _, k := range p.lookAhead {
 			list = append(list, string(k))
 		}
 
 		// 对list排序
-		sort.Strings(list)
 		for _, s := range list {
 			codeBuilder.WriteString(s)
 			codeBuilder.WriteString(" ")

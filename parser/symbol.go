@@ -85,10 +85,11 @@ func (s Symbol) isTerminals() bool {
 }
 
 type Symbols struct {
-	value       Symbol
-	productions [][]Symbol
-	firstSet    map[Symbol]struct{}
-	isNullable  bool
+	value        Symbol
+	productions  [][]Symbol
+	firstSet     []Symbol
+	firstSetKeys map[Symbol]struct{}
+	isNullable   bool
 }
 
 func newSymbols(symbol Symbol, nullable bool, productions [][]Symbol) *Symbols {
@@ -96,11 +97,13 @@ func newSymbols(symbol Symbol, nullable bool, productions [][]Symbol) *Symbols {
 	symbols.value = symbol
 	symbols.isNullable = nullable
 	symbols.productions = productions
-	symbols.firstSet = make(map[Symbol]struct{})
+
+	symbols.firstSetKeys = make(map[Symbol]struct{})
 
 	if symbol.isTerminals() {
 		// 终结符的first set是它自己
-		symbols.firstSet[symbol] = struct{}{}
+		symbols.firstSet = append(symbols.firstSet, symbol)
+		symbols.firstSetKeys[symbol] = struct{}{}
 	}
 
 	return symbols
