@@ -27,7 +27,9 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	if err == nil {
 		lexer.currentToken = token
 		log.Trace(logrus.Fields{
-			"token": token,
+			"token":        token,
+			"currentToken": lexer.currentToken,
+			"err":          err,
 		}, "lexer.NextToken output token")
 		return
 	}

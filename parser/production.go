@@ -31,8 +31,10 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 // .前移
 func (p *Production) dotForward() *Production {
 	newProduct := newProduction(p.left, p.right, p.dotPos+1)
-	for s, v := range p.lookAhead {
-		newProduct.lookAhead[s] = v
+	for _, s := range p.lookAhead {
+		if _, exists := newProduct.lookAheadKeys[s]; !exists {
+			newProduct.lookAhead = append(newProduct.lookAhead, s)
+		}
 	}
 
 	return newProduct
