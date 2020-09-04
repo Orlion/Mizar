@@ -70,8 +70,8 @@ func (fsb *FirstSetBuilder) initProductions() {
 	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatementList)
 
 	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp})
-	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp})
+	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon})
 	interfaceMethodDeclarationStatement := newSymbols(SymbolInterfaceMethodDeclarationStatement, false, productions)
 	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatement] = interfaceMethodDeclarationStatement
 	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatement)
@@ -119,6 +119,7 @@ func (fsb *FirstSetBuilder) initProductions() {
 	fsb.symbolArr = append(fsb.symbolArr, classStatementList)
 
 	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolMethodDefinition})
 	productions = append(productions, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolSemicolon})
 	productions = append(productions, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon})
 	classStatement := newSymbols(SymbolClassStatement, false, productions)

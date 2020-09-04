@@ -9,8 +9,8 @@ import (
 )
 
 type Lexer struct {
-	input     *Input
-	tempToken *Token
+	input        *Input
+	currentToken *Token
 }
 
 var TokenEofErr = errors.New("token eof")
@@ -22,15 +22,13 @@ func NewLexer(source string) *Lexer {
 }
 
 func (lexer *Lexer) NextToken() (token *Token, err error) {
-	if lexer.tempToken != nil {
-		token = lexer.tempToken
-		lexer.tempToken = nil
-		return
-	}
-
 	// 首先匹配保留字
 	token, err = lexer.reservedWords()
 	if err == nil {
+		lexer.currentToken = token
+		log.Trace(logrus.Fields{
+			"token": token,
+		}, "lexer.NextToken output token")
 		return
 	}
 
@@ -42,14 +40,12 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		return
 	}
 
-	rStr := string([]rune{r})
-
-	if 9 == r || r == 10 {
+	if 9 == r || r == 10 || r == ' ' {
 		// 忽略空格换行
 		return lexer.NextToken()
 	}
 
-	if `"` == rStr {
+	if '"' == r {
 		token, err = lexer.string()
 	} else if r >= '0' && r <= '9' {
 		lexer.input.back(1)
@@ -64,11 +60,21 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		}
 	}
 
+	if err == nil {
+		lexer.currentToken = token
+	}
+
 	log.Trace(logrus.Fields{
-		"token": token,
+		"token":        token,
+		"currentToken": lexer.currentToken,
+		"err":          err,
 	}, "lexer.NextToken output token")
 
 	return
+}
+
+func (lexer *Lexer) GetCurrentToken() (token *Token) {
+	return lexer.currentToken
 }
 
 func (lexer *Lexer) string() (token *Token, err error) {
@@ -209,8 +215,9 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 	}
 
 	// 标识符必须以字母下划线开始
-	if r != '_' && r > 'Z' && r < 'A' && r < 'a' && r > 'z' {
+	if !(r == '_' || (r <= 'Z' && r >= 'A') || (r <= 'z' && r >= 'a') || (r >= '0' && r <= '9')) {
 		err = errors.New("不识别的字符")
+		lexer.input.back(1)
 		return
 	}
 
@@ -238,6 +245,8 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 		token = new(Token)
 		token.V = string(v)
 		token.T = TokenIdentifier
+		token.LineNum = lexer.input.LineNum
+		token.ColumnNum = lexer.input.ColumnNum
 	} else {
 		err = errors.New("不识别的字符")
 	}

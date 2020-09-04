@@ -7,11 +7,11 @@ class_interface_declaration ->       class_declaration
                         |       interface_declaration
 // 接口声明
 interface_declaration ->        INTERFACE IDENTIFIER LC RC
-                        |       INTERFACE IDENTIFIER LC interface_function_declaration_statement_list RC
+                        |       INTERFACE IDENTIFIER LC interface_method_declaration_statement_list RC
 
 // 接口内部方法声明
-interface_method_declaration_statement_list ->  interface_function_declaration_statement
-                                                | interface_function_declaration_statement_list interface_function_declaration_statement
+interface_method_declaration_statement_list ->  interface_method_declaration_statement
+                                                | interface_method_declaration_statement_list interface_method_declaration_statement
 
 interface_method_declaration_statement ->       return_val_type IDENTIFIER LP RP SEMICOLON
                                         |       return_val_type IDENTIFIER LR parameter_list RP SEMICOLON

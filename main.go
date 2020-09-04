@@ -24,7 +24,7 @@ func main() {
 	// 	return
 	// }
 
-	flag.UintVar(&logLevel, "log-level", uint(logrus.ErrorLevel), "日志级别")
+	flag.UintVar(&logLevel, "log-level", uint(logrus.TraceLevel), "日志级别")
 	flag.BoolVar(&dumpAst, "dumpast", false, "是否打印抽象语法树")
 	flag.Parse()
 
@@ -42,6 +42,7 @@ func main() {
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
+	fmt.Println(err)
 
 	return
 	if err != nil {

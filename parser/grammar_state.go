@@ -36,7 +36,7 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 		}
 	}
 
-	gs.print()
+	// gs.print()
 
 	return
 }
@@ -132,14 +132,9 @@ func (gs *GrammarState) extendTransition() {
 }
 
 func (gs *GrammarState) createTransition() {
-	if gs.stateNum == 10 {
-		fmt.Println("fuck")
-	}
-
 	gs.makeClosure()
 	gs.makePartition()
 	gs.makeTransition()
-
 	gs.extendTransition()
 }
 
@@ -154,20 +149,16 @@ func (gs *GrammarState) print() {
 	fmt.Println()
 }
 
-func (gs *GrammarState) equals(other *GrammarState) bool {
-	if len(gs.productions) != len(other.productions) {
-		return false
-	}
-
-	equalsCount := 0
-	for _, gsP := range gs.productions {
-		for _, oP := range other.productions {
-			if gsP.equals(oP) {
-				equalsCount++
-				break
+func (gs *GrammarState) makeReduce() map[Symbol]*Action {
+	m := make(map[Symbol]*Action)
+	for _, p := range gs.productions {
+		if p.canBeReduce() {
+			for _, symbol := range p.lookAhead {
+				// 负数表示是根据p这个生成式做reduce
+				m[symbol] = newReduceAction(p)
 			}
 		}
 	}
 
-	return equalsCount == len(gs.productions)
+	return m
 }

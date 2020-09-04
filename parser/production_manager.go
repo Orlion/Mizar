@@ -160,6 +160,7 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolClassStatement] = []*Production{
+		newProduction(SymbolClassStatement, []Symbol{SymbolMethodDefinition}, 0),
 		newProduction(SymbolClassStatement, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolSemicolon}, 0),
 		newProduction(SymbolClassStatement, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
 	}
@@ -199,8 +200,8 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatement] = []*Production{
-		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp}, 0),
-		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp}, 0),
+		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp, SymbolSemicolon}, 0),
+		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatementList] = []*Production{

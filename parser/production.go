@@ -12,6 +12,7 @@ type Production struct {
 	dotPos        int      // .的位置
 	lookAhead     []Symbol
 	lookAheadKeys map[Symbol]struct{}
+	productionNum int
 }
 
 func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
@@ -156,10 +157,6 @@ func (p *Production) cloneSelf() *Production {
 	return product
 }
 
-func (p *Production) equals(production *Production) bool {
-	return p.GetCode() == production.GetCode() && 0 == p.lookAheadCompare(production)
-}
-
 func (p *Production) GetCode() string {
 	if p.code == "" {
 		var codeBuilder strings.Builder
@@ -194,4 +191,9 @@ func (p *Production) GetCode() string {
 	}
 
 	return p.code
+}
+
+// 判断能否reduce
+func (p *Production) canBeReduce() bool {
+	return p.dotPos >= len(p.right)
 }
