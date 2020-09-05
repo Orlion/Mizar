@@ -120,8 +120,8 @@ func (fsb *FirstSetBuilder) initProductions() {
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolMethodDefinition})
-	productions = append(productions, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon})
 	classStatement := newSymbols(SymbolClassStatement, false, productions)
 	fsb.symbolMap[SymbolClassStatement] = classStatement
 	fsb.symbolArr = append(fsb.symbolArr, classStatement)
@@ -130,13 +130,14 @@ func (fsb *FirstSetBuilder) initProductions() {
 	productions = append(productions, []Symbol{SymbolPublic})
 	productions = append(productions, []Symbol{SymbolProtected})
 	productions = append(productions, []Symbol{SymbolPrivate})
-	varModifier := newSymbols(SymbolVarModifier, false, productions)
-	fsb.symbolMap[SymbolVarModifier] = varModifier
-	fsb.symbolArr = append(fsb.symbolArr, varModifier)
+	productions = append(productions, []Symbol{SymbolAbstract})
+	memberModifier := newSymbols(SymbolMemberModifier, false, productions)
+	fsb.symbolMap[SymbolMemberModifier] = memberModifier
+	fsb.symbolArr = append(fsb.symbolArr, memberModifier)
 
 	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolMethodModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolMethodModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolLp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock})
 	methodDefinition := newSymbols(SymbolMethodDefinition, false, productions)
 	fsb.symbolMap[SymbolMethodDefinition] = methodDefinition
 	fsb.symbolArr = append(fsb.symbolArr, methodDefinition)
@@ -160,15 +161,6 @@ func (fsb *FirstSetBuilder) initProductions() {
 	parameter := newSymbols(SymbolParameter, false, productions)
 	fsb.symbolMap[SymbolParameter] = parameter
 	fsb.symbolArr = append(fsb.symbolArr, parameter)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolPublic})
-	productions = append(productions, []Symbol{SymbolProtected})
-	productions = append(productions, []Symbol{SymbolPrivate})
-	productions = append(productions, []Symbol{SymbolAbstract})
-	methodModifier := newSymbols(SymbolMethodModifier, false, productions)
-	fsb.symbolMap[SymbolMethodModifier] = methodModifier
-	fsb.symbolArr = append(fsb.symbolArr, methodModifier)
 
 	productions = [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolLc, SymbolRc})

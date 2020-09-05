@@ -42,7 +42,7 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		return
 	}
 
-	if 9 == r || r == 10 || r == ' ' {
+	if 9 == r || r == 10 || r == 13 || r == ' ' {
 		// 忽略空格换行
 		return lexer.NextToken()
 	}
@@ -67,6 +67,7 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 	}
 
 	log.Trace(logrus.Fields{
+		"r":            r,
 		"token":        token,
 		"currentToken": lexer.currentToken,
 		"err":          err,

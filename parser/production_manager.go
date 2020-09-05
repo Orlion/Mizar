@@ -24,9 +24,13 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolArgumentList, []Symbol{SymbolArgumentList, SymbolComma, SymbolExpression}, 0),
 	}
 
+	pm.productionMap[SymbolMethodCall] = []*Production{
+		newProduction(SymbolMethodCall, []Symbol{SymbolIdentifier, SymbolLp, SymbolRp}, 0),
+		newProduction(SymbolMethodCall, []Symbol{SymbolIdentifier, SymbolLp, SymbolArgumentList, SymbolRp}, 0),
+	}
+
 	pm.productionMap[SymbolNewObjExpression] = []*Production{
-		newProduction(SymbolNewObjExpression, []Symbol{SymbolNew, SymbolIdentifier, SymbolLp, SymbolRp}, 0),
-		newProduction(SymbolNewObjExpression, []Symbol{SymbolNew, SymbolIdentifier, SymbolLp, SymbolArgumentList, SymbolRp}, 0),
+		newProduction(SymbolNewObjExpression, []Symbol{SymbolNew, SymbolMethodCall}, 0),
 	}
 
 	pm.productionMap[SymbolVarCallExpression] = []*Production{
@@ -36,8 +40,7 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolMethodCallExpression] = []*Production{
-		newProduction(SymbolMethodCallExpression, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier, SymbolLp, SymbolRp}, 0),
-		newProduction(SymbolMethodCallExpression, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier, SymbolArgumentList, SymbolLp, SymbolRp}, 0),
+		newProduction(SymbolMethodCallExpression, []Symbol{SymbolCallExpression, SymbolDot, SymbolMethodCall}, 0),
 	}
 
 	pm.productionMap[SymbolCallExpression] = []*Production{
@@ -52,22 +55,21 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolExpression, []Symbol{SymbolNull}, 0),
 		newProduction(SymbolExpression, []Symbol{SymbolTrue}, 0),
 		newProduction(SymbolExpression, []Symbol{SymbolFalse}, 0),
-		newProduction(SymbolExpression, []Symbol{SymbolIdentifier}, 0),
 		newProduction(SymbolExpression, []Symbol{SymbolNewObjExpression}, 0),
 		newProduction(SymbolExpression, []Symbol{SymbolCallExpression}, 0),
 	}
 
-	pm.productionMap[SymbolVarDeclaration] = []*Production{
-		newProduction(SymbolVarDeclaration, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
+	pm.productionMap[SymbolTypeVar] = []*Production{
+		newProduction(SymbolTypeVar, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
 	}
 
 	pm.productionMap[SymbolVarAssignStatement] = []*Production{
-		newProduction(SymbolVarAssignStatement, []Symbol{SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolVarAssignStatement, []Symbol{SymbolTypeVar, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
 		newProduction(SymbolVarAssignStatement, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolVarDeclarationStatement] = []*Production{
-		newProduction(SymbolVarDeclarationStatement, []Symbol{SymbolVarDeclaration, SymbolSemicolon}, 0),
+		newProduction(SymbolVarDeclarationStatement, []Symbol{SymbolTypeVar, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolReturnStatement] = []*Production{
@@ -127,13 +129,6 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolBlock, []Symbol{SymbolLc, SymbolStatementList, SymbolRc}, 0),
 	}
 
-	pm.productionMap[SymbolMethodModifier] = []*Production{
-		newProduction(SymbolMethodModifier, []Symbol{SymbolPublic}, 0),
-		newProduction(SymbolMethodModifier, []Symbol{SymbolProtected}, 0),
-		newProduction(SymbolMethodModifier, []Symbol{SymbolPrivate}, 0),
-		newProduction(SymbolMethodModifier, []Symbol{SymbolAbstract}, 0),
-	}
-
 	pm.productionMap[SymbolParameter] = []*Production{
 		newProduction(SymbolParameter, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
 	}
@@ -143,26 +138,27 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolParameterList, []Symbol{SymbolParameterList, SymbolComma, SymbolParameter}, 0),
 	}
 
-	pm.productionMap[SymbolReturnValType] = []*Production{
-		newProduction(SymbolReturnValType, []Symbol{SymbolVoid}, 0),
-		newProduction(SymbolReturnValType, []Symbol{SymbolIdentifier}, 0),
+	pm.productionMap[SymbolMemberModifier] = []*Production{
+		newProduction(SymbolMemberModifier, []Symbol{SymbolPublic}, 0),
+		newProduction(SymbolMemberModifier, []Symbol{SymbolProtected}, 0),
+		newProduction(SymbolMemberModifier, []Symbol{SymbolPrivate}, 0),
+		newProduction(SymbolMemberModifier, []Symbol{SymbolAbstract}, 0),
 	}
 
 	pm.productionMap[SymbolMethodDefinition] = []*Production{
-		newProduction(SymbolMethodDefinition, []Symbol{SymbolMethodModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolMethodDefinition, []Symbol{SymbolMethodModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock}, 0),
+		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolRp, SymbolLp, SymbolBlock}, 0),
+		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock}, 0),
 	}
 
-	pm.productionMap[SymbolVarModifier] = []*Production{
-		newProduction(SymbolVarModifier, []Symbol{SymbolPublic}, 0),
-		newProduction(SymbolVarModifier, []Symbol{SymbolProtected}, 0),
-		newProduction(SymbolVarModifier, []Symbol{SymbolPrivate}, 0),
+	pm.productionMap[SymbolPropertyDefinition] = []*Production{
+		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolSemicolon}, 0),
+		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolClassStatement] = []*Production{
 		newProduction(SymbolClassStatement, []Symbol{SymbolMethodDefinition}, 0),
-		newProduction(SymbolClassStatement, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolSemicolon}, 0),
-		newProduction(SymbolClassStatement, []Symbol{SymbolVarModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolClassStatement, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolSemicolon}, 0),
+		newProduction(SymbolClassStatement, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolClassStatementList] = []*Production{

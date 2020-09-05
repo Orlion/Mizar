@@ -14,7 +14,10 @@ class C1 implements C {
     }
 
     public Int getA() {
-        int a = this.a;
+        Int a = this.a;
+        Int b = a;
+        a.Add(new Int(1)).Sub(new Int(2));
+        Int b = a.Add(new Int(1)).value.Add(new Int(2)).value;
         return a;
     }
 

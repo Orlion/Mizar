@@ -13,8 +13,8 @@ interface_declaration ->        INTERFACE IDENTIFIER LC RC
 interface_method_declaration_statement_list ->  interface_method_declaration_statement
                                                 | interface_method_declaration_statement_list interface_method_declaration_statement
 
-interface_method_declaration_statement ->       return_val_type IDENTIFIER LP RP SEMICOLON
-                                        |       return_val_type IDENTIFIER LR parameter_list RP SEMICOLON
+interface_method_declaration_statement ->       type_var LP RP SEMICOLON
+                                        |       type_var LR parameter_list RP SEMICOLON
 
 // 类声明
 class_declaration ->    CLASS IDENTIFIER LC RC
@@ -45,37 +45,29 @@ class_statement_list -> class_statement
                         | class_statement_list class_statement
 
 class_statement ->    method_definition
-                | var_modifier var_declaration SEMICOLON
-                | var_modifier var_declaration ASSIGN expression SEMICOLON
-        
-var_modifier   ->      PUBLIC
-                | PRIVATE
-                | PROTECTED
+                |   property_definition
 
-method_definition ->    method_modifier return_val_type IDENTIFIER LP RP block
-                        method_modifier return_val_type IDENTIFIER LP parameter_list RP block
+property_definition ->  member_modifier type_var SEMICOLON
+                    |   member_modifier type_var ASSIGN expression_statement
 
-return_val_type -> void
-                | IDENTIFIER
+method_definition ->    member_modifier type_var LP RP block
+                        member_modifier type_var LP parameter_list RP block
 
-parameter_list  ->  parameter
-                |       parameter_list COMMA parameter
-        
-
-parameter -> IDENTIFIER IDENTIFIER
-
-method_modifier -> PUBLIC
+member_modifier   ->      PUBLIC
                 | PRIVATE
                 | PROTECTED
                 | ABSTRACT
+
+parameter_list  ->  type_var
+                |       parameter_list COMMA type_var
 
 block   ->  LC  statement_list RC
         |   LC RC
 
 statement_list  ->  statement
-                |   statement staement_list
+                |   statement statement_list
 
-statement -> expression SEMICOLON
+statement -> expression_statement
         |   var_declaration_statement
         |   var_assign_statement
         |   while_statement
@@ -84,7 +76,9 @@ statement -> expression SEMICOLON
         |   break_statement
         |   continue_statement
         |   return_statement
-                        | 
+        | expression_statement
+
+expression_statement -> expression SEMICOLON
 
 while_statement ->  WHILE LP expression RP block
 if_statement -> IF LP expression RP block
@@ -100,20 +94,20 @@ for_statement ->        FOR LR                  SEMICOLON               SEMICOLO
                 |       FOR LR                  SEMICOLON expression    SEMICOLON               RP block //010
 
 break_statement -> BREAK SEMICOLON
-                |       BREAK expression SEMICOLON
+                |       BREAK expression_statement
 
 continue_statement -> CONTINUE SEMICOLON
-                |       CONTINUE expression SEMICOLON
+                |       CONTINUE expression_statement
 
 return_statement -> RETURN SEMICOLON
-                |       RETURN expression SEMICOLON
+                |       RETURN expression_statement
                         
-var_declaration_statement -> var_declaration SEMICOLON 
+var_declaration_statement -> type_var SEMICOLON
 
-var_assign_statement -> var_declaration ASSIGN expression SEMICOLON // 变量声明并赋值
-                        |       var_call_expression ASSIGN expression SEMICOLON // 给变量赋值
+var_assign_statement -> type_var ASSIGN expression_statement // 变量声明并赋值
+                        |       var_call_expression ASSIGN expression_statement // 给变量赋值
 
-var_declaration -> IDENTIFIER IDENTIFIER // 变量声明 Int abc
+type_var -> IDENTIFIER IDENTIFIER // 变量声明 Int abc
 
 expression ->           STRING_LITERAL
                     |   INT_LITERAL
@@ -121,23 +115,22 @@ expression ->           STRING_LITERAL
                     |   NULL
                     |   TRUE
                     |   FALSE
-                    |   IDENTIFIER
                     |   new_obj_expression
                     |   call_expression
 
 call_expression -> var_call_expression
                 -> method_call_expression
 
+method_call_expression -> call_expression DOT method_call
 
-method_call_expression -> call_expression DOT IDENTIFIER Lp RP
-                |       call_expression DOT IDENTIFIER Lp argument_list RP
+var_call_expression -> call_expression DOT IDENTIFIER
+                    |   THIS
+                    |   IDENTIFIER
 
-var_call_expression -> IDENTIFIER
-        |       THIS
-        |       call_expression DOT IDENTIFIER
+new_obj_expression -> NEW method_call  // new Class()
 
-new_obj_expression -> NEW IDENTIFIER LP RP  // new Class()
-                |       NEW IDENTIFIER LP argument_list RP  // new Class(argument_list)
+method_call ->  IDENTIFIER LP RP
+            |   IDENTIFIER LP argument_list RP
 
 argument_list   ->  expression
                 | argument_list COMMA expression

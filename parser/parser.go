@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"mizar/lexer"
 	"mizar/utils"
 )
@@ -35,6 +36,7 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 
 	token, lexerErr := parser.lexer.NextToken()
 	if lexerErr != nil {
+		err = fmt.Errorf("lexer error: [%w]", lexerErr)
 		return
 	}
 
@@ -72,6 +74,7 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 				// 如果当前符号是终结符，则需要移进下一个符号
 				token, lexerErr := parser.lexer.NextToken()
 				if lexerErr != nil {
+					err = fmt.Errorf("lexer error: [%w]", lexerErr)
 					return
 				}
 				currentSymbol = Symbol(token.T)
