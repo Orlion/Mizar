@@ -173,6 +173,7 @@ func (fsb *FirstSetBuilder) initProductions() {
 
 	productions := [][]Symbol{}
 	productions = append(productions, []Symbol{SymbolIdentifier, SymbolIdentifier})
+	productions = append(productions, []Symbol{SymbolVoid, SymbolIdentifier})
 	typeVar := newSymbols(SymbolTypeVar, false, productions)
 	fsb.symbolMap[SymbolTypeVar] = typeVar
 	fsb.symbolArr = append(fsb.symbolArr, typeVar)

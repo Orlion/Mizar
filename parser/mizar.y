@@ -139,3 +139,4 @@ method_call ->  IDENTIFIER LP RP
             |   IDENTIFIER LP argument_list RP
 
 type_var -> IDENTIFIER IDENTIFIER // 变量声明 Int abc
+        |   VOID IDENTIFIER

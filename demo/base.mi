@@ -1,20 +1,5 @@
 class C1 implements C {
-    public Int a;
-    private String b;
-    public Double c = 123.123;
-    private Bool f = true;
-
-    public void C1(Int a, String b) {
-        this.a = a;
-        this.b = b;
-    }
-
     public Int getA() {
-        int a = this.a;
-        return a;
-    }
-
-    public void setA(Int a) {
-        this.a = a;
+        a.Add(new Int(1)).Sub(new Int(2));
     }
 }

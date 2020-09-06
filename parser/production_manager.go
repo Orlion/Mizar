@@ -60,6 +60,7 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolTypeVar] = []*Production{
+		newProduction(SymbolTypeVar, []Symbol{SymbolVoid, SymbolIdentifier}, 0),
 		newProduction(SymbolTypeVar, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
 	}
 

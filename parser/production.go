@@ -67,24 +67,23 @@ func (p *Production) computeFirstSetOfBetaAndC() []Symbol {
 		}
 	}
 
-	for _, s := range p.lookAhead {
-		if _, exists := setKeys[s]; !exists {
-			set = append(set, s)
-		}
-	}
-
-	pm := getProductionManager()
-
 	firstSet := []Symbol{}
 
-	for _, s := range set {
-		lookAhead := pm.getFirstSetBuilder().getFirstSet(s)
-		for _, s1 := range lookAhead {
-			firstSet = append(firstSet, s1)
-		}
+	if len(set) > 0 {
+		pm := getProductionManager()
+		for _, s := range set {
+			lookAhead := pm.getFirstSetBuilder().getFirstSet(s)
+			for _, s1 := range lookAhead {
+				firstSet = append(firstSet, s1)
+			}
 
-		if !pm.getFirstSetBuilder().isSymbolNullable(s) {
-			break
+			if !pm.getFirstSetBuilder().isSymbolNullable(s) {
+				break
+			}
+		}
+	} else {
+		for _, s1 := range p.lookAhead {
+			firstSet = append(firstSet, s1)
 		}
 	}
 
@@ -130,6 +129,11 @@ func (p *Production) lookAheadCompare(production *Production) int {
 	}
 
 	if len(p.lookAhead) > len(production.lookAhead) {
+		for _, symbol := range production.lookAhead {
+			if _, exists := p.lookAheadKeys[symbol]; !exists {
+				return -1
+			}
+		}
 		return 1
 	}
 

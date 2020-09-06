@@ -16,7 +16,7 @@ type Token struct {
 type TokenType string
 
 const (
-	TokenAssign TokenType = "="
+	TokenAssign TokenType = "ASSIGN"
 	// TokenAddAssign               = "+=" // 运算完全由方法来实现，纯粹的面向对象
 	// TokenSubAssign               = "-="
 	// TokenMulAssign               = "*="
@@ -57,7 +57,7 @@ const (
 	TokenFor           = "FOR"
 	TokenClass         = "CLASS"
 	TokenInterface     = "INTERFACE"
-	TokenAbstract      = "ASBTRACT"
+	TokenAbstract      = "ABSTRACT"
 	TokenPublic        = "PUBLIC"
 	TokenPrivate       = "PRIVATE"
 	TokenProtected     = "PROTECTED"
