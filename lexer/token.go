@@ -63,6 +63,7 @@ const (
 	TokenProtected     = "PROTECTED"
 	TokenImplements    = "IMPLEMENTS"
 	TokenExtends       = "EXTENDS"
+	TokenNew           = "NEW"
 	TokenTrue          = "TRUE"
 	TokenFalse         = "FALSE"
 	TokenNull          = "NULL"
@@ -76,7 +77,7 @@ const (
 var reservedWords = []string{
 	"=", "{", "}", "(", ")", "[", "]", ";", ",", ".",
 	"continue", "return", "while", "break", "else", "void", "if", "for", "class", "interface", "abstract", "public",
-	"private", "protected", "implements", "extends", "true", "false", "null", "this",
+	"private", "protected", "implements", "extends", "true", "false", "null", "this", "new",
 }
 
 var reservedWords2TokenTypeMap = map[string]TokenType{
@@ -131,6 +132,7 @@ var reservedWords2TokenTypeMap = map[string]TokenType{
 	"false":      TokenFalse,
 	"null":       TokenNull,
 	"this":       TokenThis,
+	"new":        TokenNew,
 }
 
 func init() {
