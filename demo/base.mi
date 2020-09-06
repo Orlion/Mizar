@@ -1,6 +1,6 @@
 class C1 implements C {
     public Int a;
-    public String b;
+    private String b;
     public Double c = 123.123;
     private Bool f = true;
 

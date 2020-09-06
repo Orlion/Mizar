@@ -36,7 +36,7 @@ func newGrammarState(gsm *GrammarStateManager, stateNum int, productions []*Prod
 		}
 	}
 
-	// gs.print()
+	gs.print()
 
 	return
 }
@@ -154,7 +154,6 @@ func (gs *GrammarState) makeReduce() map[Symbol]*Action {
 	for _, p := range gs.productions {
 		if p.canBeReduce() {
 			for _, symbol := range p.lookAhead {
-				// 负数表示是根据p这个生成式做reduce
 				m[symbol] = newReduceAction(p)
 			}
 		}

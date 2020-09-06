@@ -63,9 +63,13 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolTypeVar, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
 	}
 
+	pm.productionMap[SymbolExpressionStatement] = []*Production{
+		newProduction(SymbolExpressionStatement, []Symbol{SymbolExpression, SymbolSemicolon}, 0),
+	}
+
 	pm.productionMap[SymbolVarAssignStatement] = []*Production{
-		newProduction(SymbolVarAssignStatement, []Symbol{SymbolTypeVar, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
-		newProduction(SymbolVarAssignStatement, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolVarAssignStatement, []Symbol{SymbolTypeVar, SymbolAssign, SymbolExpressionStatement}, 0),
+		newProduction(SymbolVarAssignStatement, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpressionStatement}, 0),
 	}
 
 	pm.productionMap[SymbolVarDeclarationStatement] = []*Production{
@@ -74,28 +78,28 @@ func getProductionManager() (pm *ProductionManager) {
 
 	pm.productionMap[SymbolReturnStatement] = []*Production{
 		newProduction(SymbolReturnStatement, []Symbol{SymbolReturn, SymbolSemicolon}, 0),
-		newProduction(SymbolReturnStatement, []Symbol{SymbolReturn, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolReturnStatement, []Symbol{SymbolReturn, SymbolExpressionStatement}, 0),
 	}
 
 	pm.productionMap[SymbolContinueStatement] = []*Production{
 		newProduction(SymbolContinueStatement, []Symbol{SymbolContinue, SymbolSemicolon}, 0),
-		newProduction(SymbolContinueStatement, []Symbol{SymbolContinue, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolContinueStatement, []Symbol{SymbolContinue, SymbolExpressionStatement}, 0),
 	}
 
 	pm.productionMap[SymbolBreakStatement] = []*Production{
 		newProduction(SymbolBreakStatement, []Symbol{SymbolBreak, SymbolSemicolon}, 0),
-		newProduction(SymbolBreakStatement, []Symbol{SymbolBreak, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolBreakStatement, []Symbol{SymbolBreak, SymbolExpressionStatement}, 0),
 	}
 
 	pm.productionMap[SymbolForStatement] = []*Production{
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolSemicolon, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolLp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolSemicolon, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolForStatement, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolRp, SymbolBlock}, 0),
 	}
 
 	pm.productionMap[SymbolIfStatement] = []*Production{
@@ -108,7 +112,7 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolStatement] = []*Production{
-		newProduction(SymbolStatement, []Symbol{SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolStatement, []Symbol{SymbolExpressionStatement}, 0),
 		newProduction(SymbolStatement, []Symbol{SymbolVarDeclarationStatement}, 0),
 		newProduction(SymbolStatement, []Symbol{SymbolVarAssignStatement}, 0),
 		newProduction(SymbolStatement, []Symbol{SymbolWhileStatement}, 0),
@@ -124,18 +128,18 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolStatementList, []Symbol{SymbolStatementList, SymbolStatement}, 0),
 	}
 
+	pm.productionMap[SymbolEmptyBlock] = []*Production{
+		newProduction(SymbolEmptyBlock, []Symbol{SymbolLc, SymbolRc}, 0),
+	}
+
 	pm.productionMap[SymbolBlock] = []*Production{
-		newProduction(SymbolBlock, []Symbol{SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolBlock, []Symbol{SymbolEmptyBlock}, 0),
 		newProduction(SymbolBlock, []Symbol{SymbolLc, SymbolStatementList, SymbolRc}, 0),
 	}
 
-	pm.productionMap[SymbolParameter] = []*Production{
-		newProduction(SymbolParameter, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0),
-	}
-
 	pm.productionMap[SymbolParameterList] = []*Production{
-		newProduction(SymbolParameterList, []Symbol{SymbolParameter}, 0),
-		newProduction(SymbolParameterList, []Symbol{SymbolParameterList, SymbolComma, SymbolParameter}, 0),
+		newProduction(SymbolParameterList, []Symbol{SymbolTypeVar}, 0),
+		newProduction(SymbolParameterList, []Symbol{SymbolParameterList, SymbolComma, SymbolTypeVar}, 0),
 	}
 
 	pm.productionMap[SymbolMemberModifier] = []*Production{
@@ -146,19 +150,18 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolMethodDefinition] = []*Production{
-		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolRp, SymbolLp, SymbolBlock}, 0),
-		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock}, 0),
+		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolLp, SymbolRp, SymbolBlock}, 0),
+		newProduction(SymbolMethodDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolLp, SymbolParameterList, SymbolRp, SymbolBlock}, 0),
 	}
 
 	pm.productionMap[SymbolPropertyDefinition] = []*Production{
 		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolSemicolon}, 0),
-		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolAssign, SymbolExpressionStatement}, 0),
 	}
 
 	pm.productionMap[SymbolClassStatement] = []*Production{
 		newProduction(SymbolClassStatement, []Symbol{SymbolMethodDefinition}, 0),
-		newProduction(SymbolClassStatement, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolSemicolon}, 0),
-		newProduction(SymbolClassStatement, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon}, 0),
+		newProduction(SymbolClassStatement, []Symbol{SymbolPropertyDefinition}, 0),
 	}
 
 	pm.productionMap[SymbolClassStatementList] = []*Production{
@@ -177,27 +180,27 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolClassDeclaration] = []*Production{
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
-		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0),
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatement] = []*Production{
-		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp, SymbolSemicolon}, 0),
-		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon}, 0),
+		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolTypeVar, SymbolLp, SymbolRp, SymbolSemicolon}, 0),
+		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolTypeVar, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon}, 0),
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatementList] = []*Production{
@@ -206,7 +209,7 @@ func getProductionManager() (pm *ProductionManager) {
 	}
 
 	pm.productionMap[SymbolInterfaceDeclaration] = []*Production{
-		newProduction(SymbolInterfaceDeclaration, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolRc}, 0),
+		newProduction(SymbolInterfaceDeclaration, []Symbol{SymbolInterface, SymbolIdentifier, SymbolEmptyBlock}, 0),
 		newProduction(SymbolInterfaceDeclaration, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolInterfaceMethodDeclarationStatementList, SymbolRc}, 0),
 	}
 

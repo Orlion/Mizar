@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"github.com/sirupsen/logrus"
+	"mizar/log"
 	"sort"
 	"strings"
 )
@@ -65,11 +67,29 @@ func (gsm *GrammarStateManager) getLRStateTable() map[int]map[Symbol]*Action {
 	for _, gs := range gsm.states {
 		jump := make(map[Symbol]*Action)
 		for symbol, childGs := range gs.transition {
+			if oldAction, exists := jump[symbol]; exists {
+				log.Warn(logrus.Fields{
+					"gsStateNum":        gs.stateNum,
+					"symbol":            symbol,
+					"oldAction":         oldAction,
+					"newActionStateNum": childGs.stateNum,
+				}, "shift conflict")
+			}
 			jump[symbol] = newShiftAction(childGs.stateNum)
 		}
 
 		reduceMap := gs.makeReduce()
 		for symbol, action := range reduceMap {
+			if oldAction, exists := jump[symbol]; exists {
+				log.Warn(logrus.Fields{
+					"gsStateNum":                gs.stateNum,
+					"symbol":                    symbol,
+					"oldActionIsReduce":         oldAction.isReduce,
+					"oldActionShiftStateNum":    oldAction.shiftStateNum,
+					"oldActionReduceProduction": oldAction.reduceProduction,
+					"newAction":                 action.reduceProduction.GetCode(),
+				}, "shift reduce conflict")
+			}
 			jump[symbol] = action
 		}
 

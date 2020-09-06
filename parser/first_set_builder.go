@@ -35,277 +35,6 @@ func (fsb *FirstSetBuilder) isSymbolNullable(symbol Symbol) bool {
 func (fsb *FirstSetBuilder) initProductions() {
 	fsb.symbolMap = make(map[Symbol]*Symbols)
 
-	productions := [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList})
-	translationUnit := newSymbols(SymbolTranslationUnit, false, productions)
-	fsb.symbolMap[SymbolTranslationUnit] = translationUnit
-	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList})
-	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList, SymbolClassInterfaceDeclaration})
-	classInterfaceDeclarationList := newSymbols(SymbolClassInterfaceDeclarationList, false, productions)
-	fsb.symbolMap[SymbolClassInterfaceDeclarationList] = classInterfaceDeclarationList
-	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclarationList)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolClassDeclaration})
-	productions = append(productions, []Symbol{SymbolInterfaceDeclaration})
-	classInterfaceDeclaration := newSymbols(SymbolClassInterfaceDeclaration, false, productions)
-	fsb.symbolMap[SymbolClassInterfaceDeclaration] = classInterfaceDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolInterfaceMethodDeclarationStatementList, SymbolRc})
-	interfaceDeclaration := newSymbols(SymbolInterfaceDeclaration, false, productions)
-	fsb.symbolMap[SymbolInterfaceDeclaration] = interfaceDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, interfaceDeclaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatement})
-	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatementList, SymbolInterfaceMethodDeclarationStatement})
-	interfaceMethodDeclarationStatementList := newSymbols(SymbolInterfaceMethodDeclarationStatementList, false, productions)
-	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatementList] = interfaceMethodDeclarationStatementList
-	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatementList)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolRp, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolReturnValType, SymbolIdentifier, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon})
-	interfaceMethodDeclarationStatement := newSymbols(SymbolInterfaceMethodDeclarationStatement, false, productions)
-	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatement] = interfaceMethodDeclarationStatement
-	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
-	classDeclaration := newSymbols(SymbolClassDeclaration, false, productions)
-	fsb.symbolMap[SymbolClassDeclaration] = classDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, classDeclaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolExtends, SymbolIdentifier})
-	productions = append(productions, []Symbol{SymbolExtends, SymbolComma, SymbolIdentifier})
-	extendsDelcaration := newSymbols(SymbolExtendsDelcaration, false, productions)
-	fsb.symbolMap[SymbolExtendsDelcaration] = extendsDelcaration
-	fsb.symbolArr = append(fsb.symbolArr, extendsDelcaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolImplements, SymbolIdentifier})
-	productions = append(productions, []Symbol{SymbolImplementsDeclaration, SymbolComma, SymbolIdentifier})
-	implementsDeclaration := newSymbols(SymbolImplementsDeclaration, false, productions)
-	fsb.symbolMap[SymbolImplementsDeclaration] = implementsDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, implementsDeclaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolClassStatement})
-	productions = append(productions, []Symbol{SymbolClassStatementList, SymbolClassStatement})
-	classStatementList := newSymbols(SymbolClassStatementList, false, productions)
-	fsb.symbolMap[SymbolClassStatementList] = classStatementList
-	fsb.symbolArr = append(fsb.symbolArr, classStatementList)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolMethodDefinition})
-	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon})
-	classStatement := newSymbols(SymbolClassStatement, false, productions)
-	fsb.symbolMap[SymbolClassStatement] = classStatement
-	fsb.symbolArr = append(fsb.symbolArr, classStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolPublic})
-	productions = append(productions, []Symbol{SymbolProtected})
-	productions = append(productions, []Symbol{SymbolPrivate})
-	productions = append(productions, []Symbol{SymbolAbstract})
-	memberModifier := newSymbols(SymbolMemberModifier, false, productions)
-	fsb.symbolMap[SymbolMemberModifier] = memberModifier
-	fsb.symbolArr = append(fsb.symbolArr, memberModifier)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolReturnValType, SymbolIdentifier, SymbolRp, SymbolParameterList, SymbolLp, SymbolBlock})
-	methodDefinition := newSymbols(SymbolMethodDefinition, false, productions)
-	fsb.symbolMap[SymbolMethodDefinition] = methodDefinition
-	fsb.symbolArr = append(fsb.symbolArr, methodDefinition)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolVoid})
-	productions = append(productions, []Symbol{SymbolIdentifier})
-	returnValType := newSymbols(SymbolReturnValType, false, productions)
-	fsb.symbolMap[SymbolReturnValType] = returnValType
-	fsb.symbolArr = append(fsb.symbolArr, returnValType)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolVoid})
-	productions = append(productions, []Symbol{SymbolIdentifier})
-	parameterList := newSymbols(SymbolParameterList, false, productions)
-	fsb.symbolMap[SymbolParameterList] = parameterList
-	fsb.symbolArr = append(fsb.symbolArr, parameterList)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolIdentifier, SymbolIdentifier})
-	parameter := newSymbols(SymbolParameter, false, productions)
-	fsb.symbolMap[SymbolParameter] = parameter
-	fsb.symbolArr = append(fsb.symbolArr, parameter)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolLc, SymbolRc})
-	productions = append(productions, []Symbol{SymbolLc, SymbolStatementList, SymbolRc})
-	block := newSymbols(SymbolBlock, false, productions)
-	fsb.symbolMap[SymbolBlock] = block
-	fsb.symbolArr = append(fsb.symbolArr, block)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolStatement})
-	productions = append(productions, []Symbol{SymbolStatementList, SymbolStatement})
-	statementList := newSymbols(SymbolStatementList, false, productions)
-	fsb.symbolMap[SymbolStatementList] = statementList
-	fsb.symbolArr = append(fsb.symbolArr, statementList)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolExpression, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolVarDeclarationStatement})
-	productions = append(productions, []Symbol{SymbolVarAssignStatement})
-	productions = append(productions, []Symbol{SymbolWhileStatement})
-	productions = append(productions, []Symbol{SymbolIfStatement})
-	productions = append(productions, []Symbol{SymbolForStatement})
-	productions = append(productions, []Symbol{SymbolBreakStatement})
-	productions = append(productions, []Symbol{SymbolContinueStatement})
-	productions = append(productions, []Symbol{SymbolReturnStatement})
-	statement := newSymbols(SymbolStatement, false, productions)
-	fsb.symbolMap[SymbolStatement] = statement
-	fsb.symbolArr = append(fsb.symbolArr, statement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolWhile, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock})
-	whileStatement := newSymbols(SymbolWhileStatement, false, productions)
-	fsb.symbolMap[SymbolWhileStatement] = whileStatement
-	fsb.symbolArr = append(fsb.symbolArr, whileStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolIf, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolIf, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock, SymbolElse, SymbolBlock})
-	ifStatement := newSymbols(SymbolIfStatement, false, productions)
-	fsb.symbolMap[SymbolIfStatement] = ifStatement
-	fsb.symbolArr = append(fsb.symbolArr, ifStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolSemicolon, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolLp, SymbolBlock})
-	productions = append(productions, []Symbol{SymbolFor, SymbolRp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolLp, SymbolBlock})
-	forStatement := newSymbols(SymbolForStatement, false, productions)
-	fsb.symbolMap[SymbolForStatement] = forStatement
-	fsb.symbolArr = append(fsb.symbolArr, forStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolBreak, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolBreak, SymbolExpression, SymbolSemicolon})
-	breakStatement := newSymbols(SymbolBreakStatement, false, productions)
-	fsb.symbolMap[SymbolBreakStatement] = breakStatement
-	fsb.symbolArr = append(fsb.symbolArr, breakStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolContinue, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolContinue, SymbolExpression, SymbolSemicolon})
-	continueStatement := newSymbols(SymbolContinueStatement, false, productions)
-	fsb.symbolMap[SymbolContinueStatement] = continueStatement
-	fsb.symbolArr = append(fsb.symbolArr, continueStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolReturn, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolReturn, SymbolExpression, SymbolSemicolon})
-	returnStatement := newSymbols(SymbolReturnStatement, false, productions)
-	fsb.symbolMap[SymbolReturnStatement] = returnStatement
-	fsb.symbolArr = append(fsb.symbolArr, returnStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolVarDeclaration, SymbolSemicolon})
-	varDeclarationStatement := newSymbols(SymbolVarDeclarationStatement, false, productions)
-	fsb.symbolMap[SymbolVarDeclarationStatement] = varDeclarationStatement
-	fsb.symbolArr = append(fsb.symbolArr, varDeclarationStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolVarDeclaration, SymbolAssign, SymbolExpression, SymbolSemicolon})
-	productions = append(productions, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpression, SymbolSemicolon})
-	varAssignStatement := newSymbols(SymbolVarAssignStatement, false, productions)
-	fsb.symbolMap[SymbolVarAssignStatement] = varAssignStatement
-	fsb.symbolArr = append(fsb.symbolArr, varAssignStatement)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolIdentifier, SymbolIdentifier})
-	varDeclaration := newSymbols(SymbolVarDeclaration, false, productions)
-	fsb.symbolMap[SymbolVarDeclaration] = varDeclaration
-	fsb.symbolArr = append(fsb.symbolArr, varDeclaration)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolStringLiteral})
-	productions = append(productions, []Symbol{SymbolIntLiteral})
-	productions = append(productions, []Symbol{SymbolDoubleLiteral})
-	productions = append(productions, []Symbol{SymbolNull})
-	productions = append(productions, []Symbol{SymbolTrue})
-	productions = append(productions, []Symbol{SymbolFalse})
-	productions = append(productions, []Symbol{SymbolIdentifier})
-	productions = append(productions, []Symbol{SymbolNewObjExpression})
-	productions = append(productions, []Symbol{SymbolCallExpression})
-	expression := newSymbols(SymbolExpression, false, productions)
-	fsb.symbolMap[SymbolExpression] = expression
-	fsb.symbolArr = append(fsb.symbolArr, expression)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolMethodCallExpression})
-	productions = append(productions, []Symbol{SymbolVarCallExpression})
-	callExpression := newSymbols(SymbolCallExpression, false, productions)
-	fsb.symbolMap[SymbolCallExpression] = callExpression
-	fsb.symbolArr = append(fsb.symbolArr, callExpression)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier, SymbolLp, SymbolRp})
-	productions = append(productions, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier, SymbolArgumentList, SymbolLp, SymbolRp})
-	methodCallExpression := newSymbols(SymbolMethodCallExpression, false, productions)
-	fsb.symbolMap[SymbolMethodCallExpression] = methodCallExpression
-	fsb.symbolArr = append(fsb.symbolArr, methodCallExpression)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolIdentifier})
-	productions = append(productions, []Symbol{SymbolThis})
-	productions = append(productions, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier})
-	varCallExpression := newSymbols(SymbolVarCallExpression, false, productions)
-	fsb.symbolMap[SymbolVarCallExpression] = varCallExpression
-	fsb.symbolArr = append(fsb.symbolArr, varCallExpression)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolNew, SymbolIdentifier, SymbolLp, SymbolRp})
-	productions = append(productions, []Symbol{SymbolNew, SymbolIdentifier, SymbolLp, SymbolArgumentList, SymbolRp})
-	newObjExpression := newSymbols(SymbolNewObjExpression, false, productions)
-	fsb.symbolMap[SymbolNewObjExpression] = newObjExpression
-	fsb.symbolArr = append(fsb.symbolArr, newObjExpression)
-
-	productions = [][]Symbol{}
-	productions = append(productions, []Symbol{SymbolExpression})
-	productions = append(productions, []Symbol{SymbolArgumentList, SymbolComma, SymbolExpression})
-	argumentList := newSymbols(SymbolArgumentList, false, productions)
-	fsb.symbolMap[SymbolArgumentList] = argumentList
-	fsb.symbolArr = append(fsb.symbolArr, argumentList)
-
 	eoi := newSymbols(EOISymbol, false, nil)
 	fsb.symbolMap[EOISymbol] = eoi
 	fsb.symbolArr = append(fsb.symbolArr, eoi)
@@ -441,6 +170,286 @@ func (fsb *FirstSetBuilder) initProductions() {
 	extends := newSymbols(SymbolExtends, false, nil)
 	fsb.symbolMap[SymbolExtends] = extends
 	fsb.symbolArr = append(fsb.symbolArr, extends)
+
+	productions := [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolIdentifier, SymbolIdentifier})
+	typeVar := newSymbols(SymbolTypeVar, false, productions)
+	fsb.symbolMap[SymbolTypeVar] = typeVar
+	fsb.symbolArr = append(fsb.symbolArr, typeVar)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolIdentifier, SymbolLp, SymbolRp})
+	productions = append(productions, []Symbol{SymbolIdentifier, SymbolLp, SymbolArgumentList, SymbolRp})
+	methodCall := newSymbols(SymbolMethodCall, false, productions)
+	fsb.symbolMap[SymbolMethodCall] = methodCall
+	fsb.symbolArr = append(fsb.symbolArr, methodCall)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolReturn, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolReturn, SymbolExpressionStatement})
+	returnStatement := newSymbols(SymbolReturnStatement, false, productions)
+	fsb.symbolMap[SymbolReturnStatement] = returnStatement
+	fsb.symbolArr = append(fsb.symbolArr, returnStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolContinue, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolContinue, SymbolExpressionStatement})
+	continueStatement := newSymbols(SymbolContinueStatement, false, productions)
+	fsb.symbolMap[SymbolContinueStatement] = continueStatement
+	fsb.symbolArr = append(fsb.symbolArr, continueStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolBreak, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolBreak, SymbolExpressionStatement})
+	breakStatement := newSymbols(SymbolBreakStatement, false, productions)
+	fsb.symbolMap[SymbolBreakStatement] = breakStatement
+	fsb.symbolArr = append(fsb.symbolArr, breakStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolWhile, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock})
+	whileStatement := newSymbols(SymbolWhileStatement, false, productions)
+	fsb.symbolMap[SymbolWhileStatement] = whileStatement
+	fsb.symbolArr = append(fsb.symbolArr, whileStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolSemicolon, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolExpression, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolExpression, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolFor, SymbolLp, SymbolSemicolon, SymbolExpression, SymbolSemicolon, SymbolRp, SymbolBlock})
+	forStatement := newSymbols(SymbolForStatement, false, productions)
+	fsb.symbolMap[SymbolForStatement] = forStatement
+	fsb.symbolArr = append(fsb.symbolArr, forStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolIf, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolIf, SymbolLp, SymbolExpression, SymbolRp, SymbolBlock, SymbolElse, SymbolBlock})
+	ifStatement := newSymbols(SymbolIfStatement, false, productions)
+	fsb.symbolMap[SymbolIfStatement] = ifStatement
+	fsb.symbolArr = append(fsb.symbolArr, ifStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolLc, SymbolRc})
+	emptyBlock := newSymbols(SymbolEmptyBlock, false, productions)
+	fsb.symbolMap[SymbolEmptyBlock] = emptyBlock
+	fsb.symbolArr = append(fsb.symbolArr, emptyBlock)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolLc, SymbolStatementList, SymbolRc})
+	block := newSymbols(SymbolBlock, false, productions)
+	fsb.symbolMap[SymbolBlock] = block
+	fsb.symbolArr = append(fsb.symbolArr, block)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolNew, SymbolMethodCall})
+	newObjExpression := newSymbols(SymbolNewObjExpression, false, productions)
+	fsb.symbolMap[SymbolNewObjExpression] = newObjExpression
+	fsb.symbolArr = append(fsb.symbolArr, newObjExpression)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolPublic})
+	productions = append(productions, []Symbol{SymbolProtected})
+	productions = append(productions, []Symbol{SymbolPrivate})
+	productions = append(productions, []Symbol{SymbolAbstract})
+	memberModifier := newSymbols(SymbolMemberModifier, false, productions)
+	fsb.symbolMap[SymbolMemberModifier] = memberModifier
+	fsb.symbolArr = append(fsb.symbolArr, memberModifier)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolImplements, SymbolIdentifier})
+	productions = append(productions, []Symbol{SymbolImplementsDeclaration, SymbolComma, SymbolIdentifier})
+	implementsDeclaration := newSymbols(SymbolImplementsDeclaration, false, productions)
+	fsb.symbolMap[SymbolImplementsDeclaration] = implementsDeclaration
+	fsb.symbolArr = append(fsb.symbolArr, implementsDeclaration)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolExtends, SymbolIdentifier})
+	productions = append(productions, []Symbol{SymbolExtends, SymbolComma, SymbolIdentifier})
+	extendsDeclaration := newSymbols(SymbolExtendsDelcaration, false, productions)
+	fsb.symbolMap[SymbolExtendsDelcaration] = extendsDeclaration
+	fsb.symbolArr = append(fsb.symbolArr, extendsDeclaration)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc})
+	classDeclaration := newSymbols(SymbolClassDeclaration, false, productions)
+	fsb.symbolMap[SymbolClassDeclaration] = classDeclaration
+	fsb.symbolArr = append(fsb.symbolArr, classDeclaration)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolEmptyBlock})
+	productions = append(productions, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolInterfaceMethodDeclarationStatementList, SymbolRc})
+	interfaceDeclaration := newSymbols(SymbolInterfaceDeclaration, false, productions)
+	fsb.symbolMap[SymbolInterfaceDeclaration] = interfaceDeclaration
+	fsb.symbolArr = append(fsb.symbolArr, interfaceDeclaration)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolIdentifier})
+	productions = append(productions, []Symbol{SymbolThis})
+	productions = append(productions, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier})
+	varCallExpression := newSymbols(SymbolVarCallExpression, false, productions)
+	fsb.symbolMap[SymbolVarCallExpression] = varCallExpression
+	fsb.symbolArr = append(fsb.symbolArr, varCallExpression)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolCallExpression, SymbolDot, SymbolMethodCall})
+	methodCallExpression := newSymbols(SymbolMethodCallExpression, false, productions)
+	fsb.symbolMap[SymbolMethodCallExpression] = methodCallExpression
+	fsb.symbolArr = append(fsb.symbolArr, methodCallExpression)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolMethodCallExpression})
+	productions = append(productions, []Symbol{SymbolVarCallExpression})
+	callExpression := newSymbols(SymbolCallExpression, false, productions)
+	fsb.symbolMap[SymbolCallExpression] = callExpression
+	fsb.symbolArr = append(fsb.symbolArr, callExpression)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolStringLiteral})
+	productions = append(productions, []Symbol{SymbolIntLiteral})
+	productions = append(productions, []Symbol{SymbolDoubleLiteral})
+	productions = append(productions, []Symbol{SymbolNull})
+	productions = append(productions, []Symbol{SymbolTrue})
+	productions = append(productions, []Symbol{SymbolFalse})
+	productions = append(productions, []Symbol{SymbolNewObjExpression})
+	productions = append(productions, []Symbol{SymbolCallExpression})
+	expression := newSymbols(SymbolExpression, false, productions)
+	fsb.symbolMap[SymbolExpression] = expression
+	fsb.symbolArr = append(fsb.symbolArr, expression)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolExpression})
+	productions = append(productions, []Symbol{SymbolArgumentList, SymbolComma, SymbolExpression})
+	argumentList := newSymbols(SymbolArgumentList, false, productions)
+	fsb.symbolMap[SymbolArgumentList] = argumentList
+	fsb.symbolArr = append(fsb.symbolArr, argumentList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolTypeVar, SymbolAssign, SymbolExpressionStatement})
+	productions = append(productions, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpressionStatement})
+	varAssignStatement := newSymbols(SymbolVarAssignStatement, false, productions)
+	fsb.symbolMap[SymbolVarAssignStatement] = varAssignStatement
+	fsb.symbolArr = append(fsb.symbolArr, varAssignStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolTypeVar, SymbolSemicolon})
+	varDeclarationStatement := newSymbols(SymbolVarDeclarationStatement, false, productions)
+	fsb.symbolMap[SymbolVarDeclarationStatement] = varDeclarationStatement
+	fsb.symbolArr = append(fsb.symbolArr, varDeclarationStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolTypeVar})
+	productions = append(productions, []Symbol{SymbolParameterList, SymbolComma, SymbolTypeVar})
+	parameterList := newSymbols(SymbolParameterList, false, productions)
+	fsb.symbolMap[SymbolParameterList] = parameterList
+	fsb.symbolArr = append(fsb.symbolArr, parameterList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolExpression, SymbolSemicolon})
+	expressionStatement := newSymbols(SymbolExpressionStatement, false, productions)
+	fsb.symbolMap[SymbolExpressionStatement] = expressionStatement
+	fsb.symbolArr = append(fsb.symbolArr, expressionStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolExpressionStatement})
+	productions = append(productions, []Symbol{SymbolVarDeclarationStatement})
+	productions = append(productions, []Symbol{SymbolVarAssignStatement})
+	productions = append(productions, []Symbol{SymbolWhileStatement})
+	productions = append(productions, []Symbol{SymbolIfStatement})
+	productions = append(productions, []Symbol{SymbolForStatement})
+	productions = append(productions, []Symbol{SymbolBreakStatement})
+	productions = append(productions, []Symbol{SymbolContinueStatement})
+	productions = append(productions, []Symbol{SymbolReturnStatement})
+	statement := newSymbols(SymbolStatement, false, productions)
+	fsb.symbolMap[SymbolStatement] = statement
+	fsb.symbolArr = append(fsb.symbolArr, statement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolStatement})
+	productions = append(productions, []Symbol{SymbolStatementList, SymbolStatement})
+	statementList := newSymbols(SymbolStatementList, false, productions)
+	fsb.symbolMap[SymbolStatementList] = statementList
+	fsb.symbolArr = append(fsb.symbolArr, statementList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolLp, SymbolRp, SymbolBlock})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolLp, SymbolParameterList, SymbolRp, SymbolBlock})
+	methodDefinition := newSymbols(SymbolMethodDefinition, false, productions)
+	fsb.symbolMap[SymbolMethodDefinition] = methodDefinition
+	fsb.symbolArr = append(fsb.symbolArr, methodDefinition)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolAssign, SymbolExpressionStatement})
+	propertyDefinition := newSymbols(SymbolPropertyDefinition, false, productions)
+	fsb.symbolMap[SymbolPropertyDefinition] = propertyDefinition
+	fsb.symbolArr = append(fsb.symbolArr, propertyDefinition)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolMethodDefinition})
+	productions = append(productions, []Symbol{SymbolPropertyDefinition})
+	classStatement := newSymbols(SymbolClassStatement, false, productions)
+	fsb.symbolMap[SymbolClassStatement] = classStatement
+	fsb.symbolArr = append(fsb.symbolArr, classStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolClassStatement})
+	productions = append(productions, []Symbol{SymbolClassStatementList, SymbolClassStatement})
+	classStatementList := newSymbols(SymbolClassStatementList, false, productions)
+	fsb.symbolMap[SymbolClassStatementList] = classStatementList
+	fsb.symbolArr = append(fsb.symbolArr, classStatementList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolTypeVar, SymbolLp, SymbolRp, SymbolSemicolon})
+	productions = append(productions, []Symbol{SymbolTypeVar, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon})
+	interfaceMethodDeclarationStatement := newSymbols(SymbolInterfaceMethodDeclarationStatement, false, productions)
+	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatement] = interfaceMethodDeclarationStatement
+	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatement)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatement})
+	productions = append(productions, []Symbol{SymbolInterfaceMethodDeclarationStatementList, SymbolInterfaceMethodDeclarationStatement})
+	interfaceMethodDeclarationStatementList := newSymbols(SymbolInterfaceMethodDeclarationStatementList, false, productions)
+	fsb.symbolMap[SymbolInterfaceMethodDeclarationStatementList] = interfaceMethodDeclarationStatementList
+	fsb.symbolArr = append(fsb.symbolArr, interfaceMethodDeclarationStatementList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolClassDeclaration})
+	productions = append(productions, []Symbol{SymbolInterfaceDeclaration})
+	classInterfaceDeclaration := newSymbols(SymbolClassInterfaceDeclaration, false, productions)
+	fsb.symbolMap[SymbolClassInterfaceDeclaration] = classInterfaceDeclaration
+	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclaration)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList})
+	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList, SymbolClassInterfaceDeclaration})
+	classInterfaceDeclarationList := newSymbols(SymbolClassInterfaceDeclarationList, false, productions)
+	fsb.symbolMap[SymbolClassInterfaceDeclarationList] = classInterfaceDeclarationList
+	fsb.symbolArr = append(fsb.symbolArr, classInterfaceDeclarationList)
+
+	productions = [][]Symbol{}
+	productions = append(productions, []Symbol{SymbolClassInterfaceDeclarationList})
+	translationUnit := newSymbols(SymbolTranslationUnit, false, productions)
+	fsb.symbolMap[SymbolTranslationUnit] = translationUnit
+	fsb.symbolArr = append(fsb.symbolArr, translationUnit)
 }
 
 func (fsb *FirstSetBuilder) runFirstSets() {
