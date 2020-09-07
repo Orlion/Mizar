@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"mizar/interpreter"
 	"mizar/lexer"
 	"mizar/log"
 	"mizar/parser"
@@ -43,24 +41,6 @@ func main() {
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
 	fmt.Println(err)
-
-	return
-	if err != nil {
-		fmt.Println("parse error: %w", err)
-		return
-	}
-
-	if dumpAst {
-		bytes, _ := json.Marshal(ast)
-		fmt.Println(string(bytes))
-	}
-
-	interpreter := interpreter.New()
-	err = interpreter.Exec(ast)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 
 	return
 }
