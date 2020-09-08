@@ -2,8 +2,12 @@ package parser
 
 import (
 	"fmt"
+	"go/ast"
 	"strings"
 )
+
+// 抽象语法树节点构造回调函数，当parse过程中产生reduce
+type AstNodeBuildFunc func([]interface{}) ast.Node
 
 type Production struct {
 	code          string   // 转成字符串表示, 用来标识生成式唯一
@@ -12,14 +16,15 @@ type Production struct {
 	dotPos        int      // .的位置
 	lookAhead     []Symbol
 	lookAheadKeys map[Symbol]struct{}
-	productionNum int
+	buildFunc     AstNodeBuildFunc
 }
 
-func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
+func newProduction(left Symbol, right []Symbol, dotPos int, buildFunc AstNodeBuildFunc) (p *Production) {
 	p = &Production{
-		left:   left,
-		right:  right,
-		dotPos: dotPos,
+		left:      left,
+		right:     right,
+		dotPos:    dotPos,
+		buildFunc: buildFunc,
 	}
 
 	p.lookAhead = []Symbol{EOISymbol}
@@ -30,7 +35,7 @@ func newProduction(left Symbol, right []Symbol, dotPos int) (p *Production) {
 
 // .前移
 func (p *Production) dotForward() *Production {
-	newProduct := newProduction(p.left, p.right, p.dotPos+1)
+	newProduct := newProduction(p.left, p.right, p.dotPos+1, p.buildFunc)
 	for _, s := range p.lookAhead {
 		if _, exists := newProduct.lookAheadKeys[s]; !exists {
 			newProduct.lookAhead = append(newProduct.lookAhead, s)
@@ -151,7 +156,7 @@ func (p *Production) addLookAheadSet(lookAhead []Symbol) {
 }
 
 func (p *Production) cloneSelf() *Production {
-	product := newProduction(p.left, p.right, p.dotPos)
+	product := newProduction(p.left, p.right, p.dotPos, p.buildFunc)
 	product.lookAheadKeys = make(map[Symbol]struct{})
 	for _, s := range p.lookAhead {
 		if _, exists := product.lookAheadKeys[s]; !exists {

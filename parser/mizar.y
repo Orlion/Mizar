@@ -38,7 +38,6 @@ statement -> expression_statement
         |   break_statement
         |   continue_statement
         |   return_statement
-        | expression_statement
 
 
 expression_statement -> expression SEMICOLON

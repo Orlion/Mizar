@@ -1,5 +1,7 @@
 package parser
 
+import "go/ast"
+
 type ProductionManager struct {
 	productionMap   map[Symbol][]*Production
 	firstSetBuilder *FirstSetBuilder
@@ -20,8 +22,12 @@ func getProductionManager() (pm *ProductionManager) {
 	pm.productionMap = make(map[Symbol][]*Production)
 
 	pm.productionMap[SymbolArgumentList] = []*Production{
-		newProduction(SymbolArgumentList, []Symbol{SymbolExpression}, 0),
-		newProduction(SymbolArgumentList, []Symbol{SymbolArgumentList, SymbolComma, SymbolExpression}, 0),
+		newProduction(SymbolArgumentList, []Symbol{SymbolExpression}, 0, func(args []interface{}) ast.Node {
+			return nil
+		}),
+		newProduction(SymbolArgumentList, []Symbol{SymbolArgumentList, SymbolComma, SymbolExpression}, 0, func(args []interface{}) ast.Node {
+			return nil
+		}),
 	}
 
 	pm.productionMap[SymbolMethodCall] = []*Production{

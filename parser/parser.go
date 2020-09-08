@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 	"fmt"
+	"mizar/ast"
 	"mizar/lexer"
 	"mizar/utils"
 )
@@ -11,18 +12,19 @@ type Parser struct {
 	lexer         *lexer.Lexer
 	stateStack    *utils.Stack
 	symbolStack   *utils.Stack
+	valueStack    *utils.Stack
 	lrActionTable map[int]map[Symbol]*Action
 }
 
 func NewParser(lexer *lexer.Lexer) *Parser {
-	return &Parser{lexer, utils.NewStack(), utils.NewStack(), nil}
+	return &Parser{lexer, utils.NewStack(), utils.NewStack(), utils.NewStack(), nil}
 }
 
 var ExpectError = errors.New("expect error")
 var EofError = errors.New("eof error") // 未parse完成但没有更多输入
 
 // 自底向上分析
-func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
+func (parser *Parser) Parse() (ast *ast.Ast, err error) {
 	var (
 		currentState int
 		ok           bool
@@ -59,10 +61,15 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 			for i := len(action.reduceProduction.right); i > 0; i-- {
 				parser.symbolStack.Pop()
 				parser.stateStack.Pop()
+				parser.valueStack.Pop()
 			}
 			// 将生成式左侧的非终结符压入到符号栈
 			parser.symbolStack.Push(action.reduceProduction.left)
 			currentSymbol = action.reduceProduction.left
+
+			// reduce操作意味着能够产生新的抽象语法树节点
+			// 将新节点压入值堆栈
+			// parser.valueStack.Push()
 		} else { // 做shift操作
 			// 转移之后的状态压入到状态栈
 			parser.stateStack.Push(action.shiftStateNum)
@@ -78,6 +85,7 @@ func (parser *Parser) Parse() (ast *TranslationUnit, err error) {
 					return
 				}
 				currentSymbol = Symbol(token.T)
+				parser.valueStack.Push(token)
 			} else {
 				token = parser.lexer.GetCurrentToken()
 				if token == nil {

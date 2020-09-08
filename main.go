@@ -40,7 +40,7 @@ func main() {
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
-	fmt.Println(err)
+	fmt.Println(err, ast)
 
 	return
 }
