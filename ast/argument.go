@@ -1,9 +1,9 @@
 package ast
 
-type Argument struct {
-	Expression Expression
+type ArgumentList struct {
+	List []*Expression
 }
 
-type ArgumentList struct {
-	list []*Argument
+func (argsList *ArgumentList) accept(vistor ASTVistor) {
+
 }

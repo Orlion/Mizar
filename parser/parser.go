@@ -29,6 +29,7 @@ func (parser *Parser) Parse() (ast *ast.Ast, err error) {
 		currentState int
 		ok           bool
 		action       *Action
+		args         []interface{}
 	)
 
 	gsm := newGrammarStateManager()
@@ -57,11 +58,13 @@ func (parser *Parser) Parse() (ast *ast.Ast, err error) {
 		}
 
 		if action.isReduce { // 做reduce操作
+			args = []interface{}{}
+
 			// 根据生成式右侧符号的数量从栈中pop出该数量个符号
 			for i := len(action.reduceProduction.right); i > 0; i-- {
 				parser.symbolStack.Pop()
 				parser.stateStack.Pop()
-				parser.valueStack.Pop()
+				args = append(args, parser.valueStack.Pop())
 			}
 			// 将生成式左侧的非终结符压入到符号栈
 			parser.symbolStack.Push(action.reduceProduction.left)
@@ -69,7 +72,7 @@ func (parser *Parser) Parse() (ast *ast.Ast, err error) {
 
 			// reduce操作意味着能够产生新的抽象语法树节点
 			// 将新节点压入值堆栈
-			// parser.valueStack.Push()
+			parser.valueStack.Push(action.reduceProduction.buildFunc(args))
 		} else { // 做shift操作
 			// 转移之后的状态压入到状态栈
 			parser.stateStack.Push(action.shiftStateNum)

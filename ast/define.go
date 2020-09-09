@@ -44,14 +44,8 @@ type ClassMethod struct {
 	Modifier      MemberModifier // 修饰符
 	Type          string
 	Name          string // 方法名
-	ParameterList []*Parameter
+	ParameterList *ParameterList
 	Block         *Block
-}
-
-// 形参
-type Parameter struct {
-	Type string
-	Name string
 }
 
 type Block struct {

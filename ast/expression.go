@@ -1,7 +1,30 @@
 package ast
 
-type Expression interface {
-	Node
+type ExpressionType int8
+
+const (
+	ExpressionTypeString ExpressionType = iota + 1
+	ExpressionTypeInt
+	ExpressionTypeDouble
+	ExpressionTypeNull
+	ExpressionTypeBool
+	ExpressionTypeNewObject
+	ExpressionTypeCall
+)
+
+type Expression struct {
+	StringLiteral       *StringLiteral
+	IntLiteral          *IntLiteral
+	DoubleLiteral       *DoubleLiteral
+	NullLiteral         *NullLiteral
+	BoolLiteral         *BoolLiteral
+	NewObjectExpression *NewObjectExpression
+	CallExpression      *CallExpression
+	Type                ExpressionType
+}
+
+func (expr *Expression) accept(vistor ASTVistor) {
+
 }
 
 type StringLiteral struct {
@@ -25,7 +48,11 @@ type BoolLiteral struct {
 
 type NewObjectExpression struct {
 	Name         string
-	ArgumentList []*Argument
+	ArgumentList []*Expression
+}
+
+func (newObjExpr *NewObjectExpression) accept(ASTVistor) {
+
 }
 
 type CallExpressionType int8
@@ -41,6 +68,10 @@ type CallExpression struct {
 	Type                 CallExpressionType
 }
 
+func (callExpr *CallExpression) accept(vistor ASTVistor) {
+
+}
+
 type VarCallExpressionType int8
 
 const (
@@ -50,18 +81,31 @@ const (
 )
 
 type VarCallExpression struct {
-	CallExpression        *CallExpression
-	This                  string
-	Var                   string
-	VarCallExpressionType VarCallExpressionType
+	CallExpression *CallExpression
+	This           string
+	Var            string
+	Type           VarCallExpressionType
+}
+
+func (varCallExpr *VarCallExpression) accept(vistor ASTVistor) {
+
 }
 
 type MethodCallExpression struct {
 	CallExpression *CallExpression
 	Name           string
-	ArgumentList   []*Argument
+	ArgumentList   []*Expression
 }
 
-type Argument struct {
-	Expression Expression
+func (methodCallExpr *MethodCallExpression) accept(vistor ASTVistor) {
+
+}
+
+type MethodCall struct {
+	Name         string
+	ArgumentList []*Expression
+}
+
+func (mc *MethodCall) accept(vistor ASTVistor) {
+
 }
