@@ -1,15 +1,39 @@
 package ast
 
-type ImplementsDeclaration struct {
+type Class struct {
+	Name                         string
+	IsAbstract                   bool
+	MethodDefinitionList         []*MethodDefinition
+	AbstractMethodDefinitionList []*MethodDefinition // 抽象方法列表
+	PropertyDefinitionList       []*PropertyDefinition
+	Extends                      []string
+	Implements                   []string
+}
+
+func (c *Class) accept(visitor ASTVistor) {
+
+}
+
+type Extends struct {
+	ClassNameList []string
+}
+
+func (ex *Extends) accept(visitor ASTVistor) {
+
+}
+
+type Implements struct {
 	InterfaceNameList []string
 }
 
-func (id *ImplementsDeclaration) accept(visitor ASTVistor) {
+func (id *Implements) accept(visitor ASTVistor) {
 
 }
 
 type ClassStatementList struct {
-	List []*ClassStatement
+	MethodDefinitionList         []*MethodDefinition
+	AbstractMethodDefinitionList []*MethodDefinition // 抽象方法列表
+	PropertyDefinitionList       []*PropertyDefinition
 }
 
 func (csl *ClassStatementList) accept(visitor ASTVistor) {
@@ -21,6 +45,7 @@ type ClassStatementType int8
 const (
 	ClassStatementTypeProperty ClassStatementType = iota + 1
 	ClassStatementTypeMethod
+	ClassStatementTypeAbstractMethod
 )
 
 type ClassStatement struct {

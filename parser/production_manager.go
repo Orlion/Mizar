@@ -400,13 +400,28 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolClassStatementList, []Symbol{SymbolClassStatement}, 0, func(args []interface{}) ast.Node {
 			cs := args[0].(*ast.ClassStatement)
 			csl := new(ast.ClassStatementList)
-			csl.List = append(csl.List, cs)
+			switch cs.Type {
+			case ast.ClassStatementTypeMethod:
+				csl.MethodDefinitionList = append(csl.MethodDefinitionList, cs.MethodDefinition)
+			case ast.ClassStatementTypeAbstractMethod:
+				csl.AbstractMethodDefinitionList = append(csl.AbstractMethodDefinitionList, cs.MethodDefinition)
+			case ast.ClassStatementTypeProperty:
+				csl.PropertyDefinitionList = append(csl.PropertyDefinitionList, cs.PropertyDefinition)
+			}
+
 			return csl
 		}),
 		newProduction(SymbolClassStatementList, []Symbol{SymbolClassStatementList, SymbolClassStatement}, 0, func(args []interface{}) ast.Node {
 			csl := args[0].(*ast.ClassStatementList)
 			cs := args[1].(*ast.ClassStatement)
-			csl.List = append(csl.List, cs)
+			switch cs.Type {
+			case ast.ClassStatementTypeMethod:
+				csl.MethodDefinitionList = append(csl.MethodDefinitionList, cs.MethodDefinition)
+			case ast.ClassStatementTypeAbstractMethod:
+				csl.AbstractMethodDefinitionList = append(csl.AbstractMethodDefinitionList, cs.MethodDefinition)
+			case ast.ClassStatementTypeProperty:
+				csl.PropertyDefinitionList = append(csl.PropertyDefinitionList, cs.PropertyDefinition)
+			}
 			return csl
 		}),
 	}
@@ -414,126 +429,279 @@ func getProductionManager() (pm *ProductionManager) {
 	pm.productionMap[SymbolImplementsDeclaration] = []*Production{
 		newProduction(SymbolImplementsDeclaration, []Symbol{SymbolImplements, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
 			t := args[1].(*lexer.Token)
-			id := new(ast.ImplementsDeclaration)
-			id.InterfaceNameList = append(id.InterfaceNameList, t.V)
-			return id
+			impl := new(ast.Implements)
+			impl.InterfaceNameList = append(impl.InterfaceNameList, t.V)
+			return impl
 		}),
 		newProduction(SymbolImplementsDeclaration, []Symbol{SymbolImplementsDeclaration, SymbolComma, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
-			id := args[0].(*ast.ImplementsDeclaration)
+			impl := args[0].(*ast.Implements)
 			t := args[2].(*lexer.Token)
-			id.InterfaceNameList = append(id.InterfaceNameList, t.V)
-			return id
+			impl.InterfaceNameList = append(impl.InterfaceNameList, t.V)
+			return impl
 		}),
 	}
 
 	pm.productionMap[SymbolExtendsDelcaration] = []*Production{
 		newProduction(SymbolExtendsDelcaration, []Symbol{SymbolExtends, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
-			return nil
+			t := args[1].(*lexer.Token)
+			extends := new(ast.Extends)
+			extends.ClassNameList = append(extends.ClassNameList, t.V)
+			return extends
 		}),
 		newProduction(SymbolExtendsDelcaration, []Symbol{SymbolExtends, SymbolComma, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
-			return nil
+			extends := args[0].(*ast.Extends)
+			t := args[2].(*lexer.Token)
+			extends.ClassNameList = append(extends.ClassNameList, t.V)
+			return extends
 		}),
 	}
 
 	pm.productionMap[SymbolClassDeclaration] = []*Production{
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			return &ast.Class{Name: nameT.V}
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			csl := args[3].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			csl := args[4].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			extends := args[2].(*ast.Extends)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			extends := args[2].(*ast.Extends)
+			csl := args[4].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			extends := args[3].(*ast.Extends)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			extends := args[3].(*ast.Extends)
+			csl := args[5].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			implements := args[2].(*ast.Implements)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Implements = implements.InterfaceNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			implements := args[2].(*ast.Implements)
+			csl := args[4].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Implements = implements.InterfaceNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			implements := args[3].(*ast.Implements)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Implements = implements.InterfaceNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			implements := args[3].(*ast.Implements)
+			csl := args[5].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Implements = implements.InterfaceNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			extends := args[2].(*ast.Extends)
+			implements := args[3].(*ast.Implements)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.Implements = implements.InterfaceNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			extends := args[2].(*ast.Extends)
+			implements := args[3].(*ast.Implements)
+			csl := args[5].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.Implements = implements.InterfaceNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			extends := args[3].(*ast.Extends)
+			implements := args[4].(*ast.Implements)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.Implements = implements.InterfaceNameList
+			return class
 		}),
 		newProduction(SymbolClassDeclaration, []Symbol{SymbolAbstract, SymbolClass, SymbolIdentifier, SymbolExtendsDelcaration, SymbolImplementsDeclaration, SymbolLc, SymbolClassStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[2].(*lexer.Token)
+			extends := args[3].(*ast.Extends)
+			implements := args[4].(*ast.Implements)
+			csl := args[6].(*ast.ClassStatementList)
+			class := new(ast.Class)
+			class.IsAbstract = true
+			class.Name = nameT.V
+			class.Extends = extends.ClassNameList
+			class.Implements = implements.InterfaceNameList
+			class.MethodDefinitionList = csl.MethodDefinitionList
+			class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
+			class.PropertyDefinitionList = csl.PropertyDefinitionList
+			return class
 		}),
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatement] = []*Production{
 		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolTypeVar, SymbolLp, SymbolRp, SymbolSemicolon}, 0, func(args []interface{}) ast.Node {
-			return nil
+			typeVar := args[0].(*ast.TypeVar)
+			return &ast.InterfaceMethod{Type: typeVar.Type, Name: typeVar.Name}
 		}),
 		newProduction(SymbolInterfaceMethodDeclarationStatement, []Symbol{SymbolTypeVar, SymbolLp, SymbolParameterList, SymbolRp, SymbolSemicolon}, 0, func(args []interface{}) ast.Node {
-			return nil
+			typeVar := args[0].(*ast.TypeVar)
+			paramList := args[2].(*ast.ParameterList)
+			return &ast.InterfaceMethod{Type: typeVar.Type, Name: typeVar.Name, ParameterList: paramList.List}
 		}),
 	}
 
 	pm.productionMap[SymbolInterfaceMethodDeclarationStatementList] = []*Production{
 		newProduction(SymbolInterfaceMethodDeclarationStatementList, []Symbol{SymbolInterfaceMethodDeclarationStatement}, 0, func(args []interface{}) ast.Node {
-			return nil
+			im := args[0].(*ast.InterfaceMethod)
+			return &ast.InterfaceMethodList{List: []*ast.InterfaceMethod{im}}
 		}),
 		newProduction(SymbolInterfaceMethodDeclarationStatementList, []Symbol{SymbolInterfaceMethodDeclarationStatementList, SymbolInterfaceMethodDeclarationStatement}, 0, func(args []interface{}) ast.Node {
+			iml := args[0].(*ast.InterfaceMethodList)
+			im := args[0].(*ast.InterfaceMethod)
+			iml.List = append(iml.List, im)
 			return nil
 		}),
 	}
 
 	pm.productionMap[SymbolInterfaceDeclaration] = []*Production{
 		newProduction(SymbolInterfaceDeclaration, []Symbol{SymbolInterface, SymbolIdentifier, SymbolEmptyBlock}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			return &ast.Interface{Name: nameT.V}
 		}),
 		newProduction(SymbolInterfaceDeclaration, []Symbol{SymbolInterface, SymbolIdentifier, SymbolLc, SymbolInterfaceMethodDeclarationStatementList, SymbolRc}, 0, func(args []interface{}) ast.Node {
-			return nil
+			nameT := args[1].(*lexer.Token)
+			iml := args[3].(*ast.InterfaceMethodList)
+			return &ast.Interface{Name: nameT.V, MethodList: iml.List}
 		}),
 	}
 
 	pm.productionMap[SymbolClassInterfaceDeclaration] = []*Production{
 		newProduction(SymbolClassInterfaceDeclaration, []Symbol{SymbolClassDeclaration}, 0, func(args []interface{}) ast.Node {
-			return nil
+			class := args[0].(*ast.Class)
+			return &ast.ClassInterface{Class: class, Type: ast.ClassInterfaceTypeClass}
 		}),
 		newProduction(SymbolClassInterfaceDeclaration, []Symbol{SymbolInterfaceDeclaration}, 0, func(args []interface{}) ast.Node {
-			return nil
+			inter := args[0].(*ast.Interface)
+			return &ast.ClassInterface{Interface: inter, Type: ast.ClassInterfaceTypeInterface}
 		}),
 	}
 
 	pm.productionMap[SymbolClassInterfaceDeclarationList] = []*Production{
 		newProduction(SymbolClassInterfaceDeclarationList, []Symbol{SymbolClassInterfaceDeclaration}, 0, func(args []interface{}) ast.Node {
-			return nil
+			ci := args[0].(*ast.ClassInterface)
+			tu := new(ast.TranslationUnit)
+			switch ci.Type {
+			case ast.ClassInterfaceTypeClass:
+				tu.ClassList = append(tu.ClassList, ci.Class)
+			case ast.ClassInterfaceTypeInterface:
+				tu.InterfaceList = append(tu.InterfaceList, ci.Interface)
+			}
+			return tu
 		}),
 		newProduction(SymbolClassInterfaceDeclarationList, []Symbol{SymbolClassInterfaceDeclarationList, SymbolClassInterfaceDeclaration}, 0, func(args []interface{}) ast.Node {
-			return nil
+			tu := args[0].(*ast.TranslationUnit)
+			ci := args[1].(*ast.ClassInterface)
+			switch ci.Type {
+			case ast.ClassInterfaceTypeClass:
+				tu.ClassList = append(tu.ClassList, ci.Class)
+			case ast.ClassInterfaceTypeInterface:
+				tu.InterfaceList = append(tu.InterfaceList, ci.Interface)
+			}
+			return tu
 		}),
 	}
 
 	pm.productionMap[SymbolTranslationUnit] = []*Production{
 		newProduction(SymbolTranslationUnit, []Symbol{SymbolClassInterfaceDeclarationList}, 0, func(args []interface{}) ast.Node {
-			return nil
+			tu := args[0].(*ast.TranslationUnit)
+			return tu
 		}),
 	}
 

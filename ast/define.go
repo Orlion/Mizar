@@ -1,23 +1,27 @@
 package ast
 
-type Ast struct {
-	InterfaceDefineList []*InterfaceDefine
-	ClassDefineList     []*ClassDefine
+type TranslationUnit struct {
+	InterfaceList []*Interface
+	ClassList     []*Class
 }
 
-type InterfaceDefine struct {
-	Name       string
-	MethodList []*InterfaceMethod
+func (tu *TranslationUnit) accept(vistor ASTVistor) {
+
 }
 
-type ClassDefine struct {
-	MethodDefinitionList         []*MethodDefinition
-	AbstractMethodDefinitionList []*MethodDefinition // 抽象方法列表
-	PropertyDefinitionList       []*PropertyDefinition
+type ClassInterfaceType int8
+
+const (
+	ClassInterfaceTypeClass ClassInterfaceType = iota + 1
+	ClassInterfaceTypeInterface
+)
+
+type ClassInterface struct {
+	Class     *Class
+	Interface *Interface
+	Type      ClassInterfaceType
 }
 
-// 接口中的方法
-type InterfaceMethod struct {
-	Type          string
-	ParameterList []*Parameter
+func (ci *ClassInterface) accept(vistor ASTVistor) {
+
 }
