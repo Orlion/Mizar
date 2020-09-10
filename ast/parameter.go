@@ -9,3 +9,7 @@ type Parameter struct {
 type ParameterList struct {
 	List []*Parameter
 }
+
+func (paramList *ParameterList) accept(vistor ASTVistor) {
+
+}
