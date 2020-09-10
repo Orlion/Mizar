@@ -72,7 +72,8 @@ const (
 )
 
 type VarAssignStatement struct {
-	Name              string
+	VarType           string
+	VarName           string
 	VarCallExpression *VarCallExpression
 	Expression        *Expression
 	Type              VarAssignStatementType

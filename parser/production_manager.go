@@ -3,6 +3,7 @@ package parser
 import (
 	"mizar/ast"
 	"mizar/lexer"
+	"strconv"
 )
 
 type ProductionManager struct {
@@ -49,7 +50,7 @@ func getProductionManager() (pm *ProductionManager) {
 			return &ast.MethodCall{Name: args[0].(*lexer.Token).V, ArgumentList: nil}
 		}),
 		newProduction(SymbolMethodCall, []Symbol{SymbolIdentifier, SymbolLp, SymbolArgumentList, SymbolRp}, 0, func(args []interface{}) ast.Node {
-			return &ast.MethodCall{Name: args[0].(*lexer.Token).V, ArgumentList: args[2].(ast.ArgumentList).List}
+			return &ast.MethodCall{Name: args[0].(*lexer.Token).V, ArgumentList: args[2].(*ast.ArgumentList).List}
 		}),
 	}
 
@@ -62,10 +63,10 @@ func getProductionManager() (pm *ProductionManager) {
 
 	pm.productionMap[SymbolVarCallExpression] = []*Production{
 		newProduction(SymbolVarCallExpression, []Symbol{SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
-			return &ast.VarCallExpression{Var: args[0].(lexer.Token).V, Type: ast.VarCallExpressionTypeVar}
+			return &ast.VarCallExpression{Var: args[0].(*lexer.Token).V, Type: ast.VarCallExpressionTypeVar}
 		}),
 		newProduction(SymbolVarCallExpression, []Symbol{SymbolThis}, 0, func(args []interface{}) ast.Node {
-			return &ast.VarCallExpression{This: args[0].(lexer.Token).V, Type: ast.VarCallExpressionTypeThis}
+			return &ast.VarCallExpression{This: args[0].(*lexer.Token).V, Type: ast.VarCallExpressionTypeThis}
 		}),
 		newProduction(SymbolVarCallExpression, []Symbol{SymbolCallExpression, SymbolDot, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
 			return &ast.VarCallExpression{CallExpression: args[0].(*ast.CallExpression), Var: args[2].(*lexer.Token).V, Type: ast.VarCallExpressionTypeCall}
@@ -89,22 +90,33 @@ func getProductionManager() (pm *ProductionManager) {
 
 	pm.productionMap[SymbolExpression] = []*Production{
 		newProduction(SymbolExpression, []Symbol{SymbolStringLiteral}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{StringLiteral: args[0].(*ast.StringLiteral), Type: ast.ExpressionTypeString}
+			stringToken := args[0].(*lexer.Token)
+			return &ast.Expression{StringLiteral: stringToken.V, Type: ast.ExpressionTypeString}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolIntLiteral}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{IntLiteral: args[0].(*ast.IntLiteral), Type: ast.ExpressionTypeString}
+			intToken := args[0].(*lexer.Token)
+			intVal, err := strconv.ParseInt(intToken.V, 10, 64)
+			if err != nil {
+				panic(err)
+			}
+			return &ast.Expression{IntLiteral: intVal, Type: ast.ExpressionTypeInt}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolDoubleLiteral}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{DoubleLiteral: args[0].(*ast.DoubleLiteral), Type: ast.ExpressionTypeDouble}
+			doubleToken := args[0].(*lexer.Token)
+			floatVal, err := strconv.ParseFloat(doubleToken.V, 10)
+			if err != nil {
+				panic(err)
+			}
+			return &ast.Expression{DoubleLiteral: floatVal, Type: ast.ExpressionTypeDouble}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolNull}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{NullLiteral: args[0].(*ast.NullLiteral), Type: ast.ExpressionTypeNull}
+			return &ast.Expression{NullLiteral: nil, Type: ast.ExpressionTypeNull}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolTrue}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{BoolLiteral: args[0].(*ast.BoolLiteral), Type: ast.ExpressionTypeBool}
+			return &ast.Expression{BoolLiteral: true, Type: ast.ExpressionTypeBool}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolFalse}, 0, func(args []interface{}) ast.Node {
-			return &ast.Expression{BoolLiteral: args[0].(*ast.BoolLiteral), Type: ast.ExpressionTypeBool}
+			return &ast.Expression{BoolLiteral: false, Type: ast.ExpressionTypeBool}
 		}),
 		newProduction(SymbolExpression, []Symbol{SymbolNewObjExpression}, 0, func(args []interface{}) ast.Node {
 			return &ast.Expression{NewObjectExpression: args[0].(*ast.NewObjectExpression), Type: ast.ExpressionTypeNewObject}
@@ -132,9 +144,9 @@ func getProductionManager() (pm *ProductionManager) {
 
 	pm.productionMap[SymbolVarAssignStatement] = []*Production{
 		newProduction(SymbolVarAssignStatement, []Symbol{SymbolTypeVar, SymbolAssign, SymbolExpressionStatement}, 0, func(args []interface{}) ast.Node {
-			varToken := args[0].(*lexer.Token)
+			typeVar := args[0].(*ast.TypeVar)
 			exprStmt := args[2].(*ast.ExpressionStatement)
-			return &ast.VarAssignStatement{Name: varToken.V, Expression: exprStmt.Expression, Type: ast.VarAssignStatementTypeVar}
+			return &ast.VarAssignStatement{VarName: typeVar.Name, VarType: typeVar.Type, Expression: exprStmt.Expression, Type: ast.VarAssignStatementTypeVar}
 		}),
 		newProduction(SymbolVarAssignStatement, []Symbol{SymbolVarCallExpression, SymbolAssign, SymbolExpressionStatement}, 0, func(args []interface{}) ast.Node {
 			varCallExpr := args[0].(*ast.VarCallExpression)
@@ -155,7 +167,7 @@ func getProductionManager() (pm *ProductionManager) {
 			return &ast.ReturnStatement{}
 		}),
 		newProduction(SymbolReturnStatement, []Symbol{SymbolReturn, SymbolExpressionStatement}, 0, func(args []interface{}) ast.Node {
-			exprStmt := args[0].(*ast.ExpressionStatement)
+			exprStmt := args[1].(*ast.ExpressionStatement)
 			return &ast.ReturnStatement{Expression: exprStmt.Expression}
 		}),
 	}
@@ -380,7 +392,7 @@ func getProductionManager() (pm *ProductionManager) {
 		newProduction(SymbolPropertyDefinition, []Symbol{SymbolMemberModifier, SymbolTypeVar, SymbolAssign, SymbolExpressionStatement}, 0, func(args []interface{}) ast.Node {
 			modifier := args[0].(*ast.MemberModifier)
 			typeVar := args[1].(*ast.TypeVar)
-			exprStmt := args[1].(*ast.ExpressionStatement)
+			exprStmt := args[3].(*ast.ExpressionStatement)
 			return &ast.PropertyDefinition{ModifierType: modifier.Type, Name: typeVar.Name, Type: typeVar.Type, Expr: exprStmt.Expression}
 		}),
 	}
@@ -644,9 +656,9 @@ func getProductionManager() (pm *ProductionManager) {
 		}),
 		newProduction(SymbolInterfaceMethodDeclarationStatementList, []Symbol{SymbolInterfaceMethodDeclarationStatementList, SymbolInterfaceMethodDeclarationStatement}, 0, func(args []interface{}) ast.Node {
 			iml := args[0].(*ast.InterfaceMethodList)
-			im := args[0].(*ast.InterfaceMethod)
+			im := args[1].(*ast.InterfaceMethod)
 			iml.List = append(iml.List, im)
-			return nil
+			return iml
 		}),
 	}
 

@@ -91,9 +91,10 @@ func (parser *Parser) Parse() (ast *ast.TranslationUnit, err error) {
 
 			// 将符号压入到符号栈
 			parser.symbolStack.Push(currentSymbol)
-			parser.valueStack.Push(valueToken)
 
 			if currentSymbol.isTerminals() {
+				parser.valueStack.Push(valueToken)
+
 				// 如果当前符号是终结符，则需要移进下一个符号
 				token, lexerErr := parser.lexer.NextToken()
 				if lexerErr != nil {

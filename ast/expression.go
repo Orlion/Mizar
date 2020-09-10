@@ -13,11 +13,11 @@ const (
 )
 
 type Expression struct {
-	StringLiteral       *StringLiteral
-	IntLiteral          *IntLiteral
-	DoubleLiteral       *DoubleLiteral
-	NullLiteral         *NullLiteral
-	BoolLiteral         *BoolLiteral
+	StringLiteral       string
+	IntLiteral          int64
+	DoubleLiteral       float64
+	NullLiteral         *struct{}
+	BoolLiteral         bool
 	NewObjectExpression *NewObjectExpression
 	CallExpression      *CallExpression
 	Type                ExpressionType
