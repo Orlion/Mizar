@@ -131,7 +131,7 @@ func getProductionManager() (pm *ProductionManager) {
 			return &ast.TypeVar{Type: "void", Name: args[1].(*lexer.Token).V}
 		}),
 		newProduction(SymbolTypeVar, []Symbol{SymbolIdentifier, SymbolIdentifier}, 0, func(args []interface{}) ast.Node {
-			return &ast.TypeVar{Type: args[1].(*lexer.Token).V, Name: args[1].(*lexer.Token).V}
+			return &ast.TypeVar{Type: args[0].(*lexer.Token).V, Name: args[1].(*lexer.Token).V}
 		}),
 	}
 

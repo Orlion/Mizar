@@ -16,7 +16,8 @@ type Token struct {
 type TokenType string
 
 const (
-	TokenAssign TokenType = "ASSIGN"
+	EoiToken    TokenType = "EOI"
+	TokenAssign           = "ASSIGN"
 	// TokenAddAssign               = "+=" // 运算完全由方法来实现，纯粹的面向对象
 	// TokenSubAssign               = "-="
 	// TokenMulAssign               = "*="

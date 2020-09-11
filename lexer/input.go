@@ -88,3 +88,8 @@ func (input *Input) lookahead(num int) (runes []rune, err error) {
 
 	return
 }
+
+// 判断输入流是否已结束
+func (input *Input) isEof() bool {
+	return input.pos >= input.lens-1
+}

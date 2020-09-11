@@ -24,7 +24,7 @@ var ExpectError = errors.New("expect error")
 var EofError = errors.New("eof error") // 未parse完成但没有更多输入
 
 // 自底向上分析
-func (parser *Parser) Parse() (ast *ast.TranslationUnit, err error) {
+func (parser *Parser) Parse() (tu *ast.TranslationUnit, err error) {
 	var (
 		currentState int
 		ok           bool
@@ -77,14 +77,19 @@ func (parser *Parser) Parse() (ast *ast.TranslationUnit, err error) {
 				args[len(args)-1-i] = temp
 			}
 
-			// 将生成式左侧的非终结符压入到符号栈
-			parser.symbolStack.Push(action.reduceProduction.left)
+			if action.reduceProduction.left == SymbolTranslationUnit {
+				tu = action.reduceProduction.buildFunc(args).(*ast.TranslationUnit)
+				return
+			} else {
+				// 将生成式左侧的非终结符压入到符号栈
+				parser.symbolStack.Push(action.reduceProduction.left)
 
-			currentSymbol = action.reduceProduction.left
+				currentSymbol = action.reduceProduction.left
 
-			// reduce操作意味着能够产生新的抽象语法树节点
-			// 将新节点压入值堆栈
-			parser.valueStack.Push(action.reduceProduction.buildFunc(args))
+				// reduce操作意味着能够产生新的抽象语法树节点
+				// 将新节点压入值堆栈
+				parser.valueStack.Push(action.reduceProduction.buildFunc(args))
+			}
 		} else { // 做shift操作
 			// 转移之后的状态压入到状态栈
 			parser.stateStack.Push(action.shiftStateNum)

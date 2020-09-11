@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -40,7 +41,12 @@ func main() {
 	lexer := lexer.NewLexer(source)
 	parserObj := parser.NewParser(lexer)
 	ast, err := parserObj.Parse()
-	fmt.Println(err, ast)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		bytes, _ := json.Marshal(ast)
+		fmt.Println(string(bytes))
+	}
 
 	return
 }

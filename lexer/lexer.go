@@ -22,6 +22,20 @@ func NewLexer(source string) *Lexer {
 }
 
 func (lexer *Lexer) NextToken() (token *Token, err error) {
+	if lexer.input.isEof() {
+		if lexer.currentToken.T == EoiToken {
+			err = TokenEofErr
+		} else {
+			token = new(Token)
+			token.T = EoiToken
+			token.ColumnNum = lexer.input.ColumnNum
+			token.LineNum = lexer.input.LineNum
+			lexer.currentToken = token
+		}
+
+		return
+	}
+
 	// 首先匹配保留字
 	token, err = lexer.reservedWords()
 	if err == nil {
@@ -57,9 +71,6 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		lexer.input.back(1)
 		// 如果不是关键字则尝试识别标识符
 		token, err = lexer.identifier()
-		if err != nil {
-			err = TokenUnknownErr
-		}
 	}
 
 	if err == nil {
@@ -251,7 +262,7 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 		token.LineNum = lexer.input.LineNum
 		token.ColumnNum = lexer.input.ColumnNum
 	} else {
-		err = errors.New("不识别的字符")
+		err = TokenUnknownErr
 	}
 
 	return
