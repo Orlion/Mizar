@@ -39,8 +39,8 @@ func main() {
 	source := string(b)
 
 	lexer := lexer.NewLexer(source)
-	parserObj := parser.NewParser(lexer)
-	ast, err := parserObj.Parse()
+	parserObj := parser.NewParser()
+	ast, err := parserObj.Parse(lexer)
 	if err != nil {
 		fmt.Println(err)
 	} else {

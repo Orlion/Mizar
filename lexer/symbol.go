@@ -1,8 +1,6 @@
-package parser
+package lexer
 
-import (
-	"unicode"
-)
+import "unicode"
 
 type Symbol string
 
@@ -81,31 +79,13 @@ const (
 )
 
 // 是否是终结符
-func (s Symbol) isTerminals() bool {
-	return unicode.IsUpper([]rune(s)[0])
+func (s Symbol) IsTerminals() bool {
+
+	r := unicode.IsUpper([]rune(s)[0])
+
+	return r
 }
 
-type Symbols struct {
-	value        Symbol
-	productions  [][]Symbol
-	firstSet     []Symbol
-	firstSetKeys map[Symbol]struct{}
-	isNullable   bool
-}
-
-func newSymbols(symbol Symbol, nullable bool, productions [][]Symbol) *Symbols {
-	symbols := new(Symbols)
-	symbols.value = symbol
-	symbols.isNullable = nullable
-	symbols.productions = productions
-
-	symbols.firstSetKeys = make(map[Symbol]struct{})
-
-	if symbol.isTerminals() {
-		// 终结符的first set是它自己
-		symbols.firstSet = append(symbols.firstSet, symbol)
-		symbols.firstSetKeys[symbol] = struct{}{}
-	}
-
-	return symbols
+func (s Symbol) ToString() string {
+	return string(s)
 }

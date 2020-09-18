@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"mizar/log"
 
+	"github.com/Orlion/merak/lexer"
 	"github.com/sirupsen/logrus"
 )
 
 type Lexer struct {
-	input        *Input
-	currentToken *Token
+	input *Input
 }
 
 var TokenEofErr = errors.New("token eof")
@@ -21,29 +21,25 @@ func NewLexer(source string) *Lexer {
 	return &Lexer{input: input}
 }
 
-func (lexer *Lexer) NextToken() (token *Token, err error) {
+func (lexer *Lexer) Next() (token lexer.Token, err error) {
 	if lexer.input.isEof() {
-		if lexer.currentToken.T == EoiToken {
-			err = TokenEofErr
-		} else {
-			token = new(Token)
-			token.T = EoiToken
-			token.ColumnNum = lexer.input.ColumnNum
-			token.LineNum = lexer.input.LineNum
-			lexer.currentToken = token
-		}
+		t := new(Token)
+		t.T = EoiToken
+		t.StartColumn = lexer.input.ColumnNum
+		t.EndColumn = lexer.input.ColumnNum
+		t.StartLine = lexer.input.LineNum
+		t.EndLine = lexer.input.LineNum
 
+		token = t
 		return
 	}
 
 	// 首先匹配保留字
 	token, err = lexer.reservedWords()
 	if err == nil {
-		lexer.currentToken = token
 		log.Trace(logrus.Fields{
-			"token":        token,
-			"currentToken": lexer.currentToken,
-			"err":          err,
+			"token": token,
+			"err":   err,
 		}, "lexer.NextToken output token")
 		return
 	}
@@ -58,7 +54,7 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 
 	if 9 == r || r == 10 || r == 13 || r == ' ' {
 		// 忽略空格换行
-		return lexer.NextToken()
+		return lexer.Next()
 	}
 
 	if '"' == r {
@@ -73,27 +69,22 @@ func (lexer *Lexer) NextToken() (token *Token, err error) {
 		token, err = lexer.identifier()
 	}
 
-	if err == nil {
-		lexer.currentToken = token
-	}
-
 	log.Trace(logrus.Fields{
-		"r":            r,
-		"token":        token,
-		"currentToken": lexer.currentToken,
-		"err":          err,
+		"r":     r,
+		"token": token,
+		"err":   err,
 	}, "lexer.NextToken output token")
 
 	return
 }
 
-func (lexer *Lexer) GetCurrentToken() (token *Token) {
-	return lexer.currentToken
-}
-
 func (lexer *Lexer) string() (token *Token, err error) {
 	var v []rune
 	var r rune
+
+	startColumn := lexer.input.ColumnNum
+	startLine := lexer.input.LineNum
+
 	for {
 		r, err = lexer.input.nextRune()
 		rStr := string([]rune{r})
@@ -114,8 +105,12 @@ func (lexer *Lexer) string() (token *Token, err error) {
 
 	if len(v) >= 1 {
 		token = new(Token)
-		token.V = string(v)
+		token.Lexeme = string(v)
 		token.T = TokenStringLiteral
+		token.StartColumn = startColumn
+		token.StartLine = startLine
+		token.EndColumn = lexer.input.ColumnNum
+		token.EndLine = lexer.input.LineNum
 	} else {
 		err = TokenUnknownErr
 	}
@@ -126,6 +121,10 @@ func (lexer *Lexer) string() (token *Token, err error) {
 func (lexer *Lexer) number() (token *Token, err error) {
 	var v []rune
 	var r rune
+
+	startColumn := lexer.input.ColumnNum
+	startLine := lexer.input.LineNum
+
 	// 识别状态机
 	state := 0
 State:
@@ -172,11 +171,19 @@ State:
 	case 1:
 		token = new(Token)
 		token.T = TokenIntLiteral
-		token.V = string(v)
+		token.Lexeme = string(v)
+		token.StartColumn = startColumn
+		token.StartLine = startLine
+		token.EndColumn = lexer.input.ColumnNum
+		token.EndLine = lexer.input.LineNum
 	case 2:
 		token = new(Token)
 		token.T = TokenDoubleLiteral
-		token.V = string(v)
+		token.Lexeme = string(v)
+		token.StartColumn = startColumn
+		token.StartLine = startLine
+		token.EndColumn = lexer.input.ColumnNum
+		token.EndLine = lexer.input.LineNum
 	default:
 		err = TokenUnknownErr
 	}
@@ -186,6 +193,10 @@ State:
 
 func (lexer *Lexer) reservedWords() (token *Token, err error) {
 	var runes []rune
+
+	startColumn := lexer.input.ColumnNum
+	startLine := lexer.input.LineNum
+
 	for _, reservedWord := range reservedWords {
 		reservedWordRunes := []rune(reservedWord)
 		reservedWordRunesLen := len(reservedWordRunes)
@@ -203,10 +214,12 @@ func (lexer *Lexer) reservedWords() (token *Token, err error) {
 				panic(fmt.Sprintf("reservedWords2TokenTypeMap 中不存在 %s", reservedWord))
 			}
 			token = new(Token)
-			token.V = reservedWord
 			token.T = tokenT
-			token.ColumnNum = lexer.input.ColumnNum
-			token.LineNum = lexer.input.LineNum
+			token.Lexeme = reservedWord
+			token.StartColumn = startColumn
+			token.StartLine = startLine
+			token.EndColumn = lexer.input.ColumnNum
+			token.EndLine = lexer.input.LineNum
 			return
 		}
 	}
@@ -219,6 +232,9 @@ func (lexer *Lexer) reservedWords() (token *Token, err error) {
 func (lexer *Lexer) identifier() (token *Token, err error) {
 	var v []rune
 	var r rune
+
+	startColumn := lexer.input.ColumnNum
+	startLine := lexer.input.LineNum
 
 	r, err = lexer.input.nextRune()
 	if err != nil {
@@ -257,10 +273,12 @@ func (lexer *Lexer) identifier() (token *Token, err error) {
 
 	if len(v) >= 1 {
 		token = new(Token)
-		token.V = string(v)
+		token.Lexeme = string(v)
 		token.T = TokenIdentifier
-		token.LineNum = lexer.input.LineNum
-		token.ColumnNum = lexer.input.ColumnNum
+		token.StartColumn = startColumn
+		token.StartLine = startLine
+		token.EndLine = lexer.input.LineNum
+		token.EndColumn = lexer.input.ColumnNum
 	} else {
 		err = TokenUnknownErr
 	}

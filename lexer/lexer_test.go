@@ -72,31 +72,31 @@ import (
 func TestNextToken(t *testing.T) {
 	log.Init(logrus.TraceLevel)
 	lexer := NewLexer("interface C {")
-	if token, err := lexer.NextToken(); err != nil {
+	if token, err := lexer.Next(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenInterface {
+		if token.ToString() != "interface" {
 			t.Error(token)
 			t.FailNow()
 		}
 	}
 
-	if token, err := lexer.NextToken(); err != nil {
+	if token, err := lexer.Next(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenIdentifier {
+		if token.ToString() != "C" {
 			t.Error(token)
 			t.FailNow()
 		}
 	}
 
-	if token, err := lexer.NextToken(); err != nil {
+	if token, err := lexer.Next(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	} else {
-		if token.T != TokenLc {
+		if token.ToString() != "{" {
 			t.Error(token)
 			t.FailNow()
 		}
