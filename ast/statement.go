@@ -4,7 +4,7 @@ type Block struct {
 	StatementList []*Statement
 }
 
-func (block *Block) accept(vistor ASTVistor) {
+func (block *Block) Accept(visitor Visitor) {
 
 }
 
@@ -12,7 +12,7 @@ type StatementList struct {
 	List []*Statement
 }
 
-func (stmtList *StatementList) accept(vistor ASTVistor) {
+func (stmtList *StatementList) Accept(visitor Visitor) {
 
 }
 
@@ -43,7 +43,7 @@ type Statement struct {
 	Type                    StatementType
 }
 
-func (stmt *Statement) accept(vistor ASTVistor) {
+func (stmt *Statement) Accept(visitor Visitor) {
 
 }
 
@@ -51,7 +51,7 @@ type ExpressionStatement struct {
 	Expression *Expression
 }
 
-func (exprStmt *ExpressionStatement) accept(vistor ASTVistor) {
+func (exprStmt *ExpressionStatement) Accept(visitor Visitor) {
 
 }
 
@@ -60,7 +60,7 @@ type VarDeclarationStatement struct {
 	Name string
 }
 
-func (varDeclStmt *VarDeclarationStatement) accept(vistor ASTVistor) {
+func (varDeclStmt *VarDeclarationStatement) Accept(visitor Visitor) {
 
 }
 
@@ -79,7 +79,7 @@ type VarAssignStatement struct {
 	Type              VarAssignStatementType
 }
 
-func (varAssignStmt *VarAssignStatement) accept(vistor ASTVistor) {
+func (varAssignStmt *VarAssignStatement) Accept(visitor Visitor) {
 
 }
 
@@ -88,7 +88,7 @@ type WhileStatement struct {
 	Block      *Block
 }
 
-func (whileStmt *WhileStatement) accept(vistor ASTVistor) {
+func (whileStmt *WhileStatement) Accept(visitor Visitor) {
 
 }
 
@@ -98,7 +98,7 @@ type IfStatement struct {
 	ElseBlock      *Block
 }
 
-func (ifStmt *IfStatement) accept(vistor ASTVistor) {
+func (ifStmt *IfStatement) Accept(visitor Visitor) {
 
 }
 
@@ -109,7 +109,7 @@ type ForStatement struct {
 	Block          *Block
 }
 
-func (forStmt *ForStatement) accept(vistor ASTVistor) {
+func (forStmt *ForStatement) Accept(visitor Visitor) {
 
 }
 
@@ -117,7 +117,7 @@ type BreakStatement struct {
 	Expression *Expression
 }
 
-func (breakStmt *BreakStatement) accept(vistor ASTVistor) {
+func (breakStmt *BreakStatement) Accept(visitor Visitor) {
 
 }
 
@@ -125,7 +125,7 @@ type ContinueStatement struct {
 	Expression *Expression
 }
 
-func (continueStmt *ContinueStatement) accept(vistor ASTVistor) {
+func (continueStmt *ContinueStatement) Accept(visitor Visitor) {
 
 }
 
@@ -133,6 +133,6 @@ type ReturnStatement struct {
 	Expression *Expression
 }
 
-func (returnStmt *ReturnStatement) accept(vistor ASTVistor) {
+func (returnStmt *ReturnStatement) Accept(visitor Visitor) {
 
 }

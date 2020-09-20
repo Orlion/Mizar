@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"mizar/asm"
 	"mizar/lexer"
 	"mizar/log"
 	"mizar/parser"
@@ -47,6 +48,8 @@ func main() {
 		bytes, _ := json.Marshal(ast)
 		fmt.Println(string(bytes))
 	}
+
+	asm.Generate(ast)
 
 	return
 }

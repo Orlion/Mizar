@@ -13,6 +13,6 @@ type MemberModifier struct {
 	Type MemberModifierType
 }
 
-func (memberMod *MemberModifier) accept(vistor ASTVistor) {
+func (memberMod *MemberModifier) Accept(visitor Visitor) {
 
 }

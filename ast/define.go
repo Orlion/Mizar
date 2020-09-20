@@ -5,8 +5,8 @@ type TranslationUnit struct {
 	ClassList     []*Class
 }
 
-func (tu *TranslationUnit) accept(vistor ASTVistor) {
-
+func (tu *TranslationUnit) Accept(visitor Visitor) {
+	visitor.Visit(tu)
 }
 
 type ClassInterfaceType int8
@@ -22,6 +22,6 @@ type ClassInterface struct {
 	Type      ClassInterfaceType
 }
 
-func (ci *ClassInterface) accept(vistor ASTVistor) {
+func (ci *ClassInterface) Accept(visitor Visitor) {
 
 }

@@ -5,7 +5,7 @@ type Interface struct {
 	MethodList []*InterfaceMethod
 }
 
-func (i *Interface) accept(vistor ASTVistor) {
+func (i *Interface) Accept(visitor Visitor) {
 
 }
 
@@ -13,7 +13,7 @@ type InterfaceMethodList struct {
 	List []*InterfaceMethod
 }
 
-func (iml *InterfaceMethodList) accept(vistor ASTVistor) {
+func (iml *InterfaceMethodList) Accept(visitor Visitor) {
 
 }
 
@@ -24,6 +24,6 @@ type InterfaceMethod struct {
 	ParameterList []*Parameter
 }
 
-func (im *InterfaceMethod) accept(vistor ASTVistor) {
+func (im *InterfaceMethod) Accept(visitor Visitor) {
 
 }

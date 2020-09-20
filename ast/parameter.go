@@ -10,6 +10,6 @@ type ParameterList struct {
 	List []*Parameter
 }
 
-func (paramList *ParameterList) accept(vistor ASTVistor) {
+func (paramList *ParameterList) Accept(visitor Visitor) {
 
 }

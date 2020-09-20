@@ -23,7 +23,7 @@ type Expression struct {
 	Type                ExpressionType
 }
 
-func (expr *Expression) accept(vistor ASTVistor) {
+func (expr *Expression) Accept(visitor Visitor) {
 
 }
 
@@ -68,7 +68,7 @@ type CallExpression struct {
 	Type                 CallExpressionType
 }
 
-func (callExpr *CallExpression) accept(vistor ASTVistor) {
+func (callExpr *CallExpression) Accept(visitor Visitor) {
 
 }
 
@@ -87,7 +87,7 @@ type VarCallExpression struct {
 	Type           VarCallExpressionType
 }
 
-func (varCallExpr *VarCallExpression) accept(vistor ASTVistor) {
+func (varCallExpr *VarCallExpression) Accept(visitor Visitor) {
 
 }
 
@@ -97,7 +97,7 @@ type MethodCallExpression struct {
 	ArgumentList   []*Expression
 }
 
-func (methodCallExpr *MethodCallExpression) accept(vistor ASTVistor) {
+func (methodCallExpr *MethodCallExpression) Accept(visitor Visitor) {
 
 }
 
@@ -106,6 +106,6 @@ type MethodCall struct {
 	ArgumentList []*Expression
 }
 
-func (mc *MethodCall) accept(vistor ASTVistor) {
+func (mc *MethodCall) Accept(visitor Visitor) {
 
 }
