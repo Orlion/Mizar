@@ -1,8 +1,8 @@
 package ast
 
 type TranslationUnit struct {
-	InterfaceList []*Interface
-	ClassList     []*Class
+	InterfaceMap map[string]*Interface
+	ClassMap     map[string]*Class
 }
 
 func (tu *TranslationUnit) Accept(visitor Visitor) {

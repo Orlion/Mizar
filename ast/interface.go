@@ -1,8 +1,8 @@
 package ast
 
 type Interface struct {
-	Name       string
-	MethodList []*InterfaceMethod
+	Name      string
+	MethodMap map[string]map[string]*InterfaceMethod
 }
 
 func (i *Interface) Accept(visitor Visitor) {

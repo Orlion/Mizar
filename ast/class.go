@@ -1,16 +1,16 @@
 package ast
 
 type Class struct {
-	Name                         string
-	IsAbstract                   bool
-	MethodDefinitionList         []*MethodDefinition
-	AbstractMethodDefinitionList []*MethodDefinition // 抽象方法列表
-	PropertyDefinitionList       []*PropertyDefinition
-	Extends                      []string
-	Implements                   []string
+	Name                        string
+	IsAbstract                  bool
+	MethodDefinitionMap         map[string]map[string]*MethodDefinition
+	AbstractMethodDefinitionMap map[string]map[string]*MethodDefinition // 抽象方法列表
+	PropertyDefinitionMap       map[string]*PropertyDefinition
+	Extends                     []string
+	Implements                  []string
 }
 
-func (c *Class) accept(visitor ASTVistor) {
+func (c *Class) Accept(visitor Visitor) {
 
 }
 
@@ -18,7 +18,7 @@ type Extends struct {
 	ClassNameList []string
 }
 
-func (ex *Extends) accept(visitor ASTVistor) {
+func (ex *Extends) accept(visitor Visitor) {
 
 }
 
@@ -26,17 +26,17 @@ type Implements struct {
 	InterfaceNameList []string
 }
 
-func (id *Implements) accept(visitor ASTVistor) {
+func (id *Implements) accept(visitor Visitor) {
 
 }
 
 type ClassStatementList struct {
-	MethodDefinitionList         []*MethodDefinition
-	AbstractMethodDefinitionList []*MethodDefinition // 抽象方法列表
-	PropertyDefinitionList       []*PropertyDefinition
+	MethodDefinitionMap         map[string]map[string]*MethodDefinition // map[MethodName]map[MethodParameterList]*Method
+	AbstractMethodDefinitionMap map[string]map[string]*MethodDefinition // 抽象方法列表
+	PropertyDefinitionMap       map[string]*PropertyDefinition          // 类属性声明
 }
 
-func (csl *ClassStatementList) accept(visitor ASTVistor) {
+func (csl *ClassStatementList) accept(visitor Visitor) {
 
 }
 
@@ -54,7 +54,7 @@ type ClassStatement struct {
 	Type               ClassStatementType
 }
 
-func (cs *ClassStatement) accept(visitor ASTVistor) {
+func (cs *ClassStatement) accept(visitor Visitor) {
 
 }
 
@@ -66,7 +66,7 @@ type PropertyDefinition struct {
 	Expr         *Expression
 }
 
-func (pd *PropertyDefinition) accept(visitor ASTVistor) {
+func (pd *PropertyDefinition) accept(visitor Visitor) {
 
 }
 
@@ -79,6 +79,6 @@ type MethodDefinition struct {
 	Block         *Block
 }
 
-func (md *MethodDefinition) accept(visitor ASTVistor) {
+func (md *MethodDefinition) Accept(visitor Visitor) {
 
 }

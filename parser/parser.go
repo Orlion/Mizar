@@ -368,9 +368,11 @@ func (parser *Parser) initProductions() {
 	parser.p.RegisterProduction(lexer.SymbolClassStatementList, []symbol.Symbol{lexer.SymbolClassStatement}, false, func(args []interface{}) merak_ast.Node {
 		cs := args[0].(*ast.ClassStatement)
 		csl := new(ast.ClassStatementList)
+		csl.MethodDefinitionMap = make(map[string]map[string]*ast.MethodDefinition)
+		csl.AbstractMethodDefinitionMap = make(map[string]map[string]*ast.MethodDefinition)
 		switch cs.Type {
 		case ast.ClassStatementTypeMethod:
-			csl.MethodDefinitionList = append(csl.MethodDefinitionList, cs.MethodDefinition)
+			csl.MethodDefinitionMap[cs.MethodDefinition.Name] = cs.MethodDefinition
 		case ast.ClassStatementTypeAbstractMethod:
 			csl.AbstractMethodDefinitionList = append(csl.AbstractMethodDefinitionList, cs.MethodDefinition)
 		case ast.ClassStatementTypeProperty:
@@ -511,9 +513,9 @@ func (parser *Parser) initProductions() {
 		class := new(ast.Class)
 		class.Name = nameT.Lexeme
 		class.Implements = implements.InterfaceNameList
-		class.MethodDefinitionList = csl.MethodDefinitionList
-		class.AbstractMethodDefinitionList = csl.AbstractMethodDefinitionList
-		class.PropertyDefinitionList = csl.PropertyDefinitionList
+		class.MethodDefinitionMap = csl.MethodDefinitionMap
+		class.AbstractMethodDefinitionMap = csl.AbstractMethodDefinitionMap
+		class.PropertyDefinitionMap = csl.PropertyDefinitionMap
 		return class
 	})
 	parser.p.RegisterProduction(lexer.SymbolClassDeclaration, []symbol.Symbol{lexer.SymbolAbstract, lexer.SymbolClass, lexer.SymbolIdentifier, lexer.SymbolImplementsDeclaration, lexer.SymbolEmptyBlock}, false, func(args []interface{}) merak_ast.Node {

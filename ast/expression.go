@@ -51,7 +51,7 @@ type NewObjectExpression struct {
 	ArgumentList []*Expression
 }
 
-func (newObjExpr *NewObjectExpression) accept(ASTVistor) {
+func (newObjExpr *NewObjectExpression) accept(visitor Visitor) {
 
 }
 

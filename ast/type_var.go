@@ -5,6 +5,6 @@ type TypeVar struct {
 	Name string
 }
 
-func (typeVar *TypeVar) accept(ASTVistor) {
+func (typeVar *TypeVar) accept(visitor Visitor) {
 
 }
