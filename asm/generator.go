@@ -12,12 +12,15 @@ var (
 )
 
 func Generate(tu *ast.TranslationUnit) string {
-	visitor := &Generator{}
+	visitor := &Generator{
+		o: newOutput(),
+	}
 	tu.Accept(visitor)
 	return ""
 }
 
 type Generator struct {
+	o *Output
 }
 
 func (g *Generator) Visit(node ast.Node) {
@@ -25,6 +28,8 @@ func (g *Generator) Visit(node ast.Node) {
 }
 
 func (g *Generator) visitTranslationUnit(tu *ast.TranslationUnit) (err error) {
+	g.o.Directive("file", `"hello.c"`)
+
 	mainClass, exists := tu.ClassMap["Main"]
 	if !exists {
 		err = fmt.Errorf("%w Main", ClassNotDefineErr)
@@ -39,6 +44,7 @@ func (g *Generator) visitTranslationUnit(tu *ast.TranslationUnit) (err error) {
 func (g *Generator) visitClass(class *ast.Class) (err error) {
 	if class.Name == "Main" {
 		if method, exists := class.MethodDefinitionMap["main"][""]; exists {
+			g.o.Label("main:")
 			method.Accept(g)
 		} else {
 			err = fmt.Errorf("%w main", MethodNotDefineErr)
@@ -78,7 +84,6 @@ func (g *Generator) visitStatement(stmt *ast.Statement) (err error) {
 }
 
 func (g *Generator) visitBreakStatement(stmt *ast.Statement) (err error) {
-	
 
 	return
 }
